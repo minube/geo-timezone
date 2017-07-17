@@ -1,8 +1,7 @@
 <?php
 
 /**
- * User: anabelenmejia
- * Date: 11/07/17
+ * User: abmo
  */
 class Quadrant
 {
