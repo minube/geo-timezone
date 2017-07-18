@@ -1,8 +1,10 @@
 <?php
 
+include "QuadrantIndexer.php";
+
+const MAIN_DIR = "./data/";
 const DOWNLOAD_DIR = "./data/downloads/";
-const TIMEZONE_ZIP_NAME = "timezones.zip";
-const TIMEZONE_JSON_NAME = "timezones.json";
+const TIMEZONE_FILE_NAME = "timezones";
 const REPO_HOST = "https://api.github.com";
 const REPO_USER = "node-geo-tz";
 const REPO_PATH = "/repos/evansiroky/timezone-boundary-builder/releases/latest";
@@ -47,7 +49,10 @@ function downloadLastVersion()
     $geoJsonUrl = getGeoJsonUrl($response);
     if($geoJsonUrl != GEO_JSON_DEFAULT_URL)
     {
-        getZipResponse($geoJsonUrl, DOWNLOAD_DIR . TIMEZONE_ZIP_NAME);
+        if(!is_dir(DOWNLOAD_DIR)) {
+            mkdir(DOWNLOAD_DIR);
+        }
+        getZipResponse($geoJsonUrl, DOWNLOAD_DIR . TIMEZONE_FILE_NAME . ".zip");
     }
 }
 
@@ -68,10 +73,63 @@ function unzipData($filePath)
         $zip->extractTo(DOWNLOAD_DIR. $zipName);
         $zip->close();
         $controlFlag = true;
+        unlink($filePath);
     }
     return $controlFlag;
 }
 
-downloadLastVersion();
-//deletePreviousData();
-unzipData(DOWNLOAD_DIR . TIMEZONE_ZIP_NAME);
+function renameTimezoneJsonAndGetPath()
+{
+    $path = realpath(DOWNLOAD_DIR. TIMEZONE_FILE_NAME . "/");
+    $files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path));
+    $jsonPath = "";
+    foreach($files as $pathFile => $file){
+        if(strpos($pathFile, ".json")) {
+            $jsonPath = $pathFile;
+            break;
+        }
+    }
+    return rename($jsonPath, dirname($jsonPath) . "/" . TIMEZONE_FILE_NAME . ".json");
+}
+
+function removePreviousData($path)
+{
+    $validDir = array(
+        QuadrantIndexer::LEVEL_A,
+        QuadrantIndexer::LEVEL_B,
+        QuadrantIndexer::LEVEL_C,
+        QuadrantIndexer::LEVEL_D
+    );
+    if (is_dir($path)) {
+        $objects = scandir($path);
+        foreach ($objects as $object) {
+            $objectPath = $path . "/" . $object;
+            if ($object != "." && $object != "..") {
+                if (is_dir($objectPath)) {
+                    if(in_array(basename($object), $validDir)) {
+                        removePreviousData($objectPath);
+                    }
+                } else {
+                    unlink($objectPath);
+                }
+            }
+        }
+        if (in_array(basename($path), $validDir)) {
+            rmdir($path);
+        }
+    }
+    return;
+}
+
+function uploadData()
+{
+    //downloadLastVersion();
+    //unzipData(DOWNLOAD_DIR . TIMEZONE_FILE_NAME . ".zip");
+    //$timezoneJsonPath = renameTimezoneJsonAndGetPath();
+    //removePreviousData(MAIN_DIR);
+    $geoIndexer = new QuadrantIndexer();
+    $geoIndexer->createQuadrantTreeData();
+}
+
+uploadData();
+
