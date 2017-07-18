@@ -24,7 +24,7 @@ class QuadrantTree extends Quadrant
     protected function loadFeatures($quadrantPath)
     {
         $filePath = implode('/', str_split($quadrantPath));
-        $filePath = self::DATA_DIRECTORY ; //TODO REMOVE
+        $filePath = self::DATA_DIRECTORY; //TODO REMOVE
         $geoJson = json_decode(file_get_contents($filePath . self::GEO_FEATURE_FILENAME), true);
         return $geoJson;
     }
@@ -52,9 +52,9 @@ class QuadrantTree extends Quadrant
     {
         $timeZone = null;
         $point = geoPHP::load('POINT(' . $latitude . ' ' . $longitude . ')', 'wkt');
-        foreach($features['features'] as $feature){
+        foreach ($features['features'] as $feature) {
             $polygon = $this->getPolygon($feature);
-            if ($polygon->pointInPolygon($point)){
+            if ($polygon->pointInPolygon($point)) {
                 $timeZone = $feature['properties']['tzid'];
                 break;
             }
