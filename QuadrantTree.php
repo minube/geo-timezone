@@ -2,10 +2,6 @@
 
 include "Quadrant.php";
 
-/**
- * User: anabelenmejia
- * Date: 11/07/17
- */
 class QuadrantTree extends Quadrant
 {
     const DATA_TREE_FILENAME = 'index.json';

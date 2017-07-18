@@ -2,11 +2,7 @@
 
 include "QuadrantTree.php";
 
-/**
- * User: anabelenmejia
- * Date: 11/07/17
- */
-class TimeZone
+class TimeZoneCalculator
 {
     protected $quadrantTree;
 

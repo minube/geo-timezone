@@ -1,7 +1,4 @@
 <?php
-/**
- * User: abmo
- */
 
 const DOWNLOAD_DIR = "./data/downloads/";
 const TIMEZONE_ZIP_NAME = "timezones.zip";
@@ -12,40 +9,28 @@ const REPO_PATH = "/repos/evansiroky/timezone-boundary-builder/releases/latest";
 const GEO_JSON_DEFAULT_URL = "none";
 const GEO_JSON_DEFAULT_NAME = "geojson";
 
-function getResponse($url, $saveData="none")
+
+function getResponse($url)
 {
     $curl = curl_init();
     curl_setopt_array($curl, array(
         CURLOPT_RETURNTRANSFER => 1,
         CURLOPT_URL => $url,
-        CURLOPT_USERAGENT => REPO_USER,
-        CURLOPT_RETURNTRANSFER => true
+        CURLOPT_USERAGENT => REPO_USER
     ));
-
     $response = curl_exec($curl);
     curl_close($curl);
     return $response;
 }
 
-function saveData($data, $destinationPath)
+function getZipResponse($url, $destinationPath="none")
 {
-//    $file = fopen($destinationPath, "w+");
-//    fputs($file, $data);
-//    fclose($file);
-
-    file_put_contents($destinationPath, $data);
-
-//    $zip = new ZipArchive();
-//    if ($zip->open($destinationPath, ZipArchive::CREATE)!==TRUE) {
-//        exit("cannot open <$destinationPath>\n");
-//    }
-//    $zip->addFile($data);
-//    $zip->close();
+    exec("wget {$url} --output-document={$destinationPath}");
 }
 
 function getGeoJsonUrl($data)
 {
-    $jsonResp =json_decode($data, true);
+    $jsonResp = json_decode($data, true);
     $geoJsonUrl = GEO_JSON_DEFAULT_URL;
     foreach($jsonResp['assets'] as $asset) {
         if(strpos($asset['name'], GEO_JSON_DEFAULT_NAME)) {
@@ -62,9 +47,7 @@ function downloadLastVersion()
     $geoJsonUrl = getGeoJsonUrl($response);
     if($geoJsonUrl != GEO_JSON_DEFAULT_URL)
     {
-        $destination = DOWNLOAD_DIR . TIMEZONE_ZIP_NAME;
-        $response = getResponse($geoJsonUrl, $destination);
-        saveData($response, $destination);
+        getZipResponse($geoJsonUrl, DOWNLOAD_DIR . TIMEZONE_ZIP_NAME);
     }
 }
 
@@ -75,11 +58,20 @@ function deletePreviousData()
 
 function unzipData($filePath)
 {
-    $zip = zip_open($filePath);
-    print_r(zip_read($zip));
-    zip_close($zip);
+    $zip = new ZipArchive;
+    $controlFlag = false;
+    if ($zip->open($filePath) === TRUE) {
+        $zipName = basename($filePath, ".zip");
+        if(!is_dir(DOWNLOAD_DIR . $zipName)) {
+            mkdir(DOWNLOAD_DIR . $zipName);
+        }
+        $zip->extractTo(DOWNLOAD_DIR. $zipName);
+        $zip->close();
+        $controlFlag = true;
+    }
+    return $controlFlag;
 }
 
 downloadLastVersion();
 //deletePreviousData();
-unzipData(DOWNLOAD_DIR . "timezones.geojson.zip");
+unzipData(DOWNLOAD_DIR . TIMEZONE_ZIP_NAME);

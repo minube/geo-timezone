@@ -1,8 +1,5 @@
 <?php
 
-/**
- * User: abmo
- */
 class Quadrant
 {
     const MAX_ABS_LATITUDE = 90.0;
