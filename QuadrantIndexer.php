@@ -70,7 +70,8 @@ class QuadrantIndexer extends QuadrantTree
         );
     }
 
-    protected function intersection($geoFeaturesA, $geoFeaturesB) {
+    protected function intersection($geoFeaturesA, $geoFeaturesB)
+    {
         //TODO COMPLETE!
         $intersection = array();
         return $intersection;
@@ -125,7 +126,7 @@ class QuadrantIndexer extends QuadrantTree
         return array($topRight, $topLeft, $bottomLeft, $bottomRight);
     }
 
-    protected  function createPolygon($polygonPoints)
+    protected function createPolygon($polygonPoints)
     {
         return geoPHP::load($polygonPoints, 'wkt');
     }
@@ -173,46 +174,51 @@ class QuadrantIndexer extends QuadrantTree
         return $features;
     }
 
+    protected function getFeatures($intersectionResult, $curZone)
+    {
+        $features = [];
+        for ($zoneIdx = count($intersectionResult['intersectedZones']) - 1; $zoneIdx >= 0; $zoneIdx--) {
+            $tzIdx = $intersectionResult['intersectedZones'][$zoneIdx];
+            $curBoundsGeoJson = $this->getGeoBoundsPolygon($curZone['bounds']);
+            $intersectedArea = $this->intersection(
+                $this->dataSource['features'][$tzIdx]['geometry'],
+                $curBoundsGeoJson);
+
+            if ($intersectedArea) {
+                $intersectedArea['properties']['tzid'] = $this->timezones[$tzIdx];
+                $features[] = $intersectedArea;
+            }
+        }
+        return $features;
+    }
+
     protected function analyzeIntersectedZones($intersectionResult, $curZone, $lastLevel)
     {
-        $zoneResult = -1;  // defaults to no zones found
+        $zoneResult = -1;
         $nextZones = [];
         if (count($intersectionResult['intersectedZones']) === 1 && $intersectionResult['foundExactMatch']) {
             $zoneResult = $intersectionResult['intersectedZones'][0];
-        } else {
-            if (count($intersectionResult['intersectedZones']) > 0) {
-                if($lastLevel) {
-                    $features = [];
-                    for ($zoneIdx = count($intersectionResult['intersectedZones']) - 1; $zoneIdx >= 0; $zoneIdx--) {
-                        $tzIdx = $intersectionResult['intersectedZones'][$zoneIdx];
-                        $curBoundsGeoJson = $this->getGeoBoundsPolygon($curZone['bounds']);
-                        $intersectedArea = $this->intersection(
-                            $this->dataSource['features'][$tzIdx]['geometry'],
-                            $curBoundsGeoJson);
-
-                        if ($intersectedArea) {
-                            $intersectedArea['properties']['tzid'] = $this->timezones[$tzIdx];
-                            $features[] = $intersectedArea;
-                        }
-                    }
-                    $areaGeoJson = $this->getFeatureCollection($features);
-                    $path = QuadrantTree::DATA_DIRECTORY . '/' . $curZone['id'] . replace('/\./g', '/'); // TODO
-                    $this->writeGeoFeaturesJson($areaGeoJson, $path);
-                    $zoneResult = 'f';
-                } else {
-                    $nextZones = $this->getNextZones(
-                        $curZone['id'],
-                        $intersectionResult['intersectedZones'],
-                        $curZone['bounds']
-                    );
-                    $zoneResult = array(
-                        'a' => $intersectionResult['intersectedZones'],
-                        'b' => $intersectionResult['intersectedZones'],
-                        'c' => $intersectionResult['intersectedZones'],
-                        'd' => $intersectionResult['intersectedZones']
-                    );
-                }
+        } elseif (count($intersectionResult['intersectedZones']) > 0) {
+            if ($lastLevel) {
+                $features = $this->getFeatures($intersectionResult, $curZone);
+                $areaGeoJson = $this->getFeatureCollection($features);
+                $path = QuadrantTree::DATA_DIRECTORY . '/' . str_replace('/\./g', '/', $curZone['id']);
+                $this->writeGeoFeaturesJson($areaGeoJson, $path);
+                $zoneResult = 'f';
+            } else {
+                $nextZones = $this->getNextZones(
+                    $curZone['id'],
+                    $intersectionResult['intersectedZones'],
+                    $curZone['bounds']
+                );
+                $zoneResult = array(
+                    'a' => $intersectionResult['intersectedZones'],
+                    'b' => $intersectionResult['intersectedZones'],
+                    'c' => $intersectionResult['intersectedZones'],
+                    'd' => $intersectionResult['intersectedZones']
+                );
             }
+
         }
         return array(
             'zoneResult' => $zoneResult,
@@ -232,10 +238,12 @@ class QuadrantIndexer extends QuadrantTree
         $nextZones = array();
         for ($levelIdx = count($this->zoneLevels) - 1; $levelIdx >= 0; $levelIdx--) {
             $curZone = $this->zoneLevels[$levelIdx];
+            print_r($curZone);
+            die;
             $curBounds = $curZone['bounds'];
             $curBoundsGeoJson = $this->getGeoBoundsPolygon($curBounds);
             $timezonesToInspect = $curZone['tzs'];
-            if(!$lastLevel) {
+            if (!$lastLevel) {
                 $timezonesToInspect = $this->detectTimeZonesToInspect($curZone['tzs']);
             }
             $intersectionResult = $this->inspectZones($timezonesToInspect, $curBoundsGeoJson);
@@ -265,8 +273,8 @@ class QuadrantIndexer extends QuadrantTree
     {
         $writtenBytes = false;
         $path = realpath($path);
-        if($path && is_writable($path)){
-            $full = $path .DIRECTORY_SEPARATOR. QuadrantTree::GEO_FEATURE_FILENAME;
+        if ($path && is_writable($path)) {
+            $full = $path . DIRECTORY_SEPARATOR . QuadrantTree::GEO_FEATURE_FILENAME;
             $writtenBytes = file_put_contents($full, json_encode($jsonData));
         }
         return $writtenBytes;
@@ -286,8 +294,8 @@ class QuadrantIndexer extends QuadrantTree
         $writtenBytes = false;
         $tree = $this->buildTree();
         $path = realpath(QuadrantTree::DATA_DIRECTORY);
-        if($path && is_writable($path)){
-            $full = $path .DIRECTORY_SEPARATOR. QuadrantTree::DATA_TREE_FILENAME;
+        if ($path && is_writable($path)) {
+            $full = $path . DIRECTORY_SEPARATOR . QuadrantTree::DATA_TREE_FILENAME;
             $writtenBytes = file_put_contents($full, json_encode($tree));
         }
         return $writtenBytes;
