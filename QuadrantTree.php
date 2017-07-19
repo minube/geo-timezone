@@ -6,7 +6,7 @@ class QuadrantTree extends Quadrant
 {
     const DATA_TREE_FILENAME = 'index.json';
     const DATA_DIRECTORY = './data/';
-    const GEO_FEATURE_FILENAME = 'geobuf.json';
+    const GEO_FEATURE_FILENAME = 'geo.json';
     protected $dataTree = null;
 
     public function __construct()
