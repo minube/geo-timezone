@@ -9,6 +9,7 @@ class TimeZoneCalculator
     public function __construct()
     {
         $this->quadrantTree = new QuadrantTree();
+        $this->quadrantTree->initializeDataTree();
     }
 
     protected function adjustLatitude($latitude)

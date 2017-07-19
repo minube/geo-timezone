@@ -9,13 +9,7 @@ class QuadrantTree extends Quadrant
     const GEO_FEATURE_FILENAME = 'geo.json';
     protected $dataTree = null;
 
-    public function __construct()
-    {
-        parent::__construct();
-        $this->initializeDataTree();
-    }
-
-    protected function initializeDataTree()
+    public function initializeDataTree()
     {
         $jsonData = file_get_contents(self::DATA_DIRECTORY . self::DATA_TREE_FILENAME);
         $this->dataTree = json_decode($jsonData, true);
