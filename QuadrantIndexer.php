@@ -53,18 +53,24 @@ class QuadrantIndexer extends QuadrantTree
 
     protected function inspectZones($timezonesToInspect, $geoBoundsPolygon)
     {
+        echo "Inside inspectZones()\n";
         $intersectedZones = [];
         $foundExactMatch = false;
         for ($inspectIdx = count($timezonesToInspect) - 1; $inspectIdx >= 0; $inspectIdx--) {
+            echo $inspectIdx . "\n";
             $zoneIdx = $timezonesToInspect[$inspectIdx];
             $zonePointsJson = $this->dataSource['features'][$zoneIdx]['geometry'];
             $zonePolygon = $this->createPolygonFromJson($zonePointsJson);
-            if (geoPhp::intersects($zonePolygon, $geoBoundsPolygon)) {
-                if (geoPhp::within($zonePolygon, $geoBoundsPolygon)) {
+            var_dump($geoBoundsPolygon->intersects($zonePolygon));
+            if ($geoBoundsPolygon->intersects($zonePolygon)) { //$geoBoundsPolygon->asText())) {
+                echo "Inside the zone!";
+                if ($geoBoundsPolygon->within($zonePolygon->asText())) {
+                    echo "Exact match!";
                     $intersectedZones = [$zoneIdx];
                     $foundExactMatch = true;
                     break;
                 } else {
+                    echo "add zone";
                     $intersectedZones[] = $zoneIdx;
                 }
             }
@@ -233,7 +239,6 @@ class QuadrantIndexer extends QuadrantTree
                     'd' => $intersectionResult['intersectedZones']
                 );
             }
-
         }
         return array(
             'zoneResult' => $zoneResult,
@@ -257,6 +262,7 @@ class QuadrantIndexer extends QuadrantTree
             $geoBoundsPolygon = $this->getGeoBoundsPolygon($curBounds);
             $timezonesToInspect = $this->detectTimeZonesToInspect($curZone);
             $intersectionResult = $this->inspectZones($timezonesToInspect, $geoBoundsPolygon);
+            print_r($intersectionResult);
             $analyzedResults = $this->analyzeIntersectedZones($intersectionResult, $curZone, $lastLevel);
             $nextZones[] = $analyzedResults['nextZones'];
             $this->updateLookup($analyzedResults['zoneResult'], $curZone['id']);
