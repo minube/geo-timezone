@@ -4,9 +4,9 @@ include "Quadrant.php";
 
 class QuadrantTree extends Quadrant
 {
-    const DATA_TREE_FILENAME = 'index.json';
-    const DATA_DIRECTORY = './data/';
-    const GEO_FEATURE_FILENAME = 'geo.json';
+    const DATA_TREE_FILENAME = "index.json";
+    const DATA_DIRECTORY = "./data/";
+    const GEO_FEATURE_FILENAME = "geo.json";
     protected $dataTree = null;
 
     public function initializeDataTree()
