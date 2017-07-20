@@ -175,15 +175,15 @@ class QuadrantIndexer extends QuadrantTree
 
     protected function adaptGeoBoundsToPolygon($curBounds)
     {
-       return array(
-           array(
-               array($curBounds[0], $curBounds[1]),
-               array($curBounds[0], $curBounds[3]),
-               array($curBounds[2], $curBounds[3]),
-               array($curBounds[2], $curBounds[1]),
-               array($curBounds[0], $curBounds[1])
-           )
-       );
+        return array(
+            array(
+                array($curBounds[0], $curBounds[1]),
+                array($curBounds[0], $curBounds[3]),
+                array($curBounds[2], $curBounds[3]),
+                array($curBounds[2], $curBounds[1]),
+                array($curBounds[0], $curBounds[1])
+            )
+        );
     }
 
     protected function getGeoBoundsPolygon($curBounds)
@@ -219,7 +219,7 @@ class QuadrantIndexer extends QuadrantTree
     protected function structureFeatures($features)
     {
         $structuredFeatures = array();
-        foreach($features as $feature) {
+        foreach ($features as $feature) {
             $structuredFeatures[] = array(
                 "type" => "Feature",
                 "geometry" => array(
@@ -257,7 +257,7 @@ class QuadrantIndexer extends QuadrantTree
         if (count($intersectionResult['intersectedZones']) === 1 && $intersectionResult['foundExactMatch']) {
             $zoneResult = $intersectionResult['intersectedZones'][0];
         } elseif (count($intersectionResult['intersectedZones']) > 0) {
-            if ($lastLevelFlag === 1) {
+            if ($lastLevelFlag == 1) {
                 echo "Last level!\n";
                 $features = $this->getFeatures($intersectionResult, $curZone);
                 $featuresCollection = $this->getFeatureCollection($features);
@@ -301,6 +301,7 @@ class QuadrantIndexer extends QuadrantTree
         echo "Indexing next quadrant...\n";
         $nextZones = array();
         for ($levelIdx = count($this->zoneLevels) - 1; $levelIdx >= 0; $levelIdx--) {
+            echo "LevelIdx: " . $levelIdx . "\n";
             $curZone = $this->zoneLevels[$levelIdx];
             echo "Cuadrant to be analyzed: \n";
             print_r($curZone);
@@ -333,12 +334,25 @@ class QuadrantIndexer extends QuadrantTree
         $this->writeQuadrantTreeJson();
     }
 
+    protected function createDirectoryTree($path)
+    {
+        $path = dirname($path);
+        $directories = explode(QuadrantTree::DATA_DIRECTORY, $path)[1];
+        $directories = explode("/", $directories);
+        print_r($directories);
+        $currentDir = QuadrantTree::DATA_DIRECTORY;
+        foreach ($directories as $dir) {
+            $currentDir = $currentDir . "/" . $dir;
+            if (!is_dir($currentDir)) {
+                mkdir($currentDir);
+            }
+        }
+    }
+
     protected function writeGeoFeaturesToJson($features, $path)
     {
         $writtenBytes = false;
-        if(!is_dir($path)) {
-            mkdir($path);
-        }
+        $this->createDirectoryTree($path);
         if ($path && is_writable($path)) {
             $full = $path . DIRECTORY_SEPARATOR . QuadrantTree::GEO_FEATURE_FILENAME;
             $writtenBytes = file_put_contents($full, json_encode($features));
