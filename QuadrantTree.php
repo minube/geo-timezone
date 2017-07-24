@@ -41,7 +41,6 @@ class QuadrantTree extends Quadrant
         return geoPHP::load($coordinatesPolygon, 'json');
     }
 
-    //TODO update when the .buf files can be read
     protected function isInQuadrantFeatures($features, $latitude, $longitude)
     {
         $timeZone = null;
