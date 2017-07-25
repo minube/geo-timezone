@@ -56,11 +56,6 @@ function downloadLastVersion()
     }
 }
 
-function deletePreviousData()
-{
-    //TODO REMOVE ALL FILES AND FOLDERS IN DATA FOLDER
-}
-
 function unzipData($filePath)
 {
     $zip = new ZipArchive;
@@ -121,7 +116,7 @@ function removePreviousData($path)
     return;
 }
 
-function uploadData()
+function updateData()
 {
     //downloadLastVersion();
     //unzipData(DOWNLOAD_DIR . TIMEZONE_FILE_NAME . ".zip");
@@ -131,5 +126,5 @@ function uploadData()
     $geoIndexer->createQuadrantTreeData();
 }
 
-uploadData();
+updateData();
 
