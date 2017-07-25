@@ -4,7 +4,7 @@ include_once('./lib/geoPHP.inc');
 
 class Utils
 {
-    protected function createPolygonJsonFromPoints($polygonPoints)
+    public static function createPolygonJsonFromPoints($polygonPoints)
     {
         $polygonData = array(
             'type' => "Polygon",
@@ -14,37 +14,37 @@ class Utils
         return $polygonData;
     }
 
-    protected function createPolygonFromPoints($polygonPoints)
+    public static function createPolygonFromPoints($polygonPoints)
     {
-        $polygonData = $this->createPolygonJsonFromPoints($polygonPoints);
+        $polygonData = self::createPolygonJsonFromPoints($polygonPoints);
         return geoPHP::load(json_encode($polygonData), 'json');
     }
 
-    protected function createPolygonFromJson($polygonJson)
+    public static function createPolygonFromJson($polygonJson)
     {
         return geoPHP::load(json_encode($polygonJson), 'json');
     }
 
-    protected function adaptQuadrantBoundsToPolygon($curBounds)
+    public static function adaptQuadrantBoundsToPolygon($quadrantBounds)
     {
         return array(
             array(
-                array($curBounds[0], $curBounds[1]),
-                array($curBounds[0], $curBounds[3]),
-                array($curBounds[2], $curBounds[3]),
-                array($curBounds[2], $curBounds[1]),
-                array($curBounds[0], $curBounds[1])
+                array($quadrantBounds[0], $quadrantBounds[1]),
+                array($quadrantBounds[0], $quadrantBounds[3]),
+                array($quadrantBounds[2], $quadrantBounds[3]),
+                array($quadrantBounds[2], $quadrantBounds[1]),
+                array($quadrantBounds[0], $quadrantBounds[1])
             )
         );
     }
 
-    protected function getQuadrantBoundsPolygon($curBounds)
+    public static function getQuadrantPolygon($quadrantBounds)
     {
-        $polygonPoints = $this->adaptQuadrantBoundsToPolygon($curBounds);
-        return $this->createPolygonFromPoints($polygonPoints);
+        $polygonPoints = self::adaptQuadrantBoundsToPolygon($quadrantBounds);
+        return self::createPolygonFromPoints($polygonPoints);
     }
 
-    protected function structureFeatures($features)
+    public static function structureFeatures($features)
     {
         $structuredFeatures = array();
         foreach ($features as $feature) {
@@ -60,21 +60,21 @@ class Utils
         return $structuredFeatures;
     }
 
-    protected function getFeatureCollection($features)
+    public static function getFeatureCollection($features)
     {
         $featuresCollection = array(
             "type" => "FeatureCollection",
             "features" => array(
-                $this->structureFeatures($features)
+                self::structureFeatures($features)
             )
         );
         return $featuresCollection;
     }
 
-    protected function intersection($geoFeaturesJsonA, $geoFeaturesJsonB)
+    public static function intersection($geoFeaturesJsonA, $geoFeaturesJsonB)
     {
-        $polygonA = $this->createPolygonFromJson($geoFeaturesJsonA);
-        $polygonB = $this->createPolygonFromJson($geoFeaturesJsonB);
+        $polygonA = self::createPolygonFromJson($geoFeaturesJsonA);
+        $polygonB = self::createPolygonFromJson($geoFeaturesJsonB);
         $intersectionData = $polygonA->intersection($polygonB);
         return $intersectionData->out('json', true);
     }
