@@ -118,10 +118,10 @@ function removePreviousData($path)
 
 function updateData()
 {
-    //downloadLastVersion();
-    //unzipData(DOWNLOAD_DIR . TIMEZONE_FILE_NAME . ".zip");
-    //$timezoneJsonPath = renameTimezoneJsonAndGetPath();
-    //removePreviousData(MAIN_DIR);
+    downloadLastVersion();
+    unzipData(DOWNLOAD_DIR . TIMEZONE_FILE_NAME . ".zip");
+    $timezoneJsonPath = renameTimezoneJsonAndGetPath();
+    removePreviousData(MAIN_DIR);
     $geoIndexer = new QuadrantIndexer();
     $geoIndexer->createQuadrantTreeData();
 }

@@ -7,7 +7,7 @@ include "GeometryUtils.php";
 class QuadrantIndexer extends QuadrantTree
 {
     const DEFAULT_DATA_SOURCE_PATH = "./data/downloads/timezones/dist/timezones.json";
-    const TARGET_INDEX_PERCENT = 0.5; //0.98;
+    const TARGET_INDEX_PERCENT = 0.9;
     const DEFAULT_ZONE_RESULT = -1;
     const LEVEL_DELIMITER_SYMBOL = ".";
     const TOTAL_LEVELS = 4;
