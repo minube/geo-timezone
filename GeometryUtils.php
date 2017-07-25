@@ -2,6 +2,11 @@
 
 include_once('./lib/geoPHP.inc');
 
+/**
+ * Convert array of coordinates to polygon structured json array
+ * @param $polygonPoints
+ * @return array
+ */
 function createPolygonJsonFromPoints($polygonPoints)
 {
     $polygonData = array(
@@ -12,17 +17,32 @@ function createPolygonJsonFromPoints($polygonPoints)
     return $polygonData;
 }
 
+/**
+ * Create polygon geometry object from polygon points array
+ * @param $polygonPoints
+ * @return bool|GeometryCollection|mixed
+ */
 function createPolygonFromPoints($polygonPoints)
 {
     $polygonData = self::createPolygonJsonFromPoints($polygonPoints);
     return geoPHP::load(json_encode($polygonData), 'json');
 }
 
+/**
+ * Create polygon geometry object from structured polygon data (as json)
+ * @param $polygonJson
+ * @return bool|GeometryCollection|mixed
+ */
 function createPolygonFromJson($polygonJson)
 {
     return geoPHP::load(json_encode($polygonJson), 'json');
 }
 
+/**
+ * Adapt quadrant bounds to polygon array format
+ * @param $quadrantBounds
+ * @return array
+ */
 function adaptQuadrantBoundsToPolygon($quadrantBounds)
 {
     return array(
@@ -36,12 +56,22 @@ function adaptQuadrantBoundsToPolygon($quadrantBounds)
     );
 }
 
+/**
+ * Create polygon object from quadrant bounds
+ * @param $quadrantBounds
+ * @return mixed
+ */
 function getQuadrantPolygon($quadrantBounds)
 {
     $polygonPoints = self::adaptQuadrantBoundsToPolygon($quadrantBounds);
     return self::createPolygonFromPoints($polygonPoints);
 }
 
+/**
+ * Structure features data
+ * @param $features
+ * @return array
+ */
 function structureFeatures($features)
 {
     $structuredFeatures = array();
@@ -58,6 +88,11 @@ function structureFeatures($features)
     return $structuredFeatures;
 }
 
+/**
+ * Create feature collection array from features list
+ * @param $features
+ * @return array
+ */
 function getFeatureCollection($features)
 {
     $featuresCollection = array(
@@ -69,6 +104,12 @@ function getFeatureCollection($features)
     return $featuresCollection;
 }
 
+/**
+ * Get intersection data json from two different geometry features
+ * @param $geoFeaturesJsonA
+ * @param $geoFeaturesJsonB
+ * @return mixed
+ */
 function intersection($geoFeaturesJsonA, $geoFeaturesJsonB)
 {
     $polygonA = self::createPolygonFromJson($geoFeaturesJsonA);
