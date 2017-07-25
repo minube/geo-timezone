@@ -1,7 +1,7 @@
 <?php
 
 include "QuadrantTree.php";
-include "Utils.php";
+include "GeometryUtils.php";
 
 
 class QuadrantIndexer extends QuadrantTree
@@ -62,7 +62,7 @@ class QuadrantIndexer extends QuadrantTree
         for ($inspectIdx = count($timezonesToInspect) - 1; $inspectIdx >= 0; $inspectIdx--) {
             $zoneIdx = $timezonesToInspect[$inspectIdx];
             $zonePointsJson = $this->dataSource['features'][$zoneIdx]['geometry'];
-            $zonePolygon = Utils::createPolygonFromJson($zonePointsJson);
+            $zonePolygon = createPolygonFromJson($zonePointsJson);
             if ($zonePolygon->intersects($quadrantPolygon)) {
                 if ($quadrantPolygon->within($zonePolygon)) {
                     $intersectedZones = $zoneIdx;
@@ -158,10 +158,10 @@ class QuadrantIndexer extends QuadrantTree
         $features = [];
         for ($zoneIdx = count($intersectionResult['intersectedZones']) - 1; $zoneIdx >= 0; $zoneIdx--) {
             $tzIdx = $intersectionResult['intersectedZones'][$zoneIdx];
-            $quadrantBoundsGeoJson = Utils::createPolygonJsonFromPoints(
-                Utils::adaptQuadrantBoundsToPolygon($curQuadrant['bounds'])
+            $quadrantBoundsGeoJson = createPolygonJsonFromPoints(
+                adaptQuadrantBoundsToPolygon($curQuadrant['bounds'])
             );
-            $intersectedArea = Utils::intersection(
+            $intersectedArea = intersection(
                 $this->dataSource['features'][$tzIdx]['geometry'],
                 $quadrantBoundsGeoJson);
             if ($intersectedArea) {
@@ -172,7 +172,7 @@ class QuadrantIndexer extends QuadrantTree
         return $features;
     }
 
-    protected function analyzeIntersectedZones($intersectionResult, $curQuadrant, $lastLevelFlag)
+    protected function getAssociatedZonesAndNextQuadrants($intersectionResult, $curQuadrant, $lastLevelFlag)
     {
         $zoneResult = self::DEFAULT_ZONE_RESULT;
         $nextQuadrants = [];
@@ -181,7 +181,7 @@ class QuadrantIndexer extends QuadrantTree
         } elseif (count($intersectionResult['intersectedZones']) > 0) {
             if ($lastLevelFlag) {
                 $features = $this->getFeatures($intersectionResult, $curQuadrant);
-                $featuresCollection = Utils::getFeatureCollection($features);
+                $featuresCollection = getFeatureCollection($features);
                 $featuresPath = QuadrantTree::DATA_DIRECTORY .
                     str_replace('.', "/", $curQuadrant['id']) . "/";
                 $this->writeGeoFeaturesToJson($featuresCollection, $featuresPath);
@@ -218,9 +218,9 @@ class QuadrantIndexer extends QuadrantTree
         $nextQuadrants = array();
         for ($levelIdx = count($this->currentQuadrants) - 1; $levelIdx >= 0; $levelIdx--) {
             $curQuadrant = $this->currentQuadrants[$levelIdx];
-            $analyzedResults = $this->analyzeCurrentQuadrant($lastLevelFlag, $curQuadrant);
-            $this->updateLookup($analyzedResults['zoneResult'], $curQuadrant['id']);
-            $nextQuadrants = array_merge($nextQuadrants, $analyzedResults['nextQuadrants']);
+            $nextStep = $this->findTimezonesAndNextQuadrants($lastLevelFlag, $curQuadrant);
+            $this->updateLookup($nextStep['zoneResult'], $curQuadrant['id']);
+            $nextQuadrants = array_merge($nextQuadrants, $nextStep['nextQuadrants']);
         }
         return $nextQuadrants;
     }
@@ -303,14 +303,14 @@ class QuadrantIndexer extends QuadrantTree
      * @param $curQuadrant
      * @return array
      */
-    protected function analyzeCurrentQuadrant($lastLevelFlag, $curQuadrant)
+    protected function findTimezonesAndNextQuadrants($lastLevelFlag, $curQuadrant)
     {
         $quadrantBounds = $curQuadrant['bounds'];
-        $quadrantPolygon = Utils::getQuadrantPolygon($quadrantBounds);
+        $quadrantPolygon = getQuadrantPolygon($quadrantBounds);
         $timezonesToInspect = $this->detectTimeZonesToInspect($curQuadrant);
         $intersectionResult = $this->inspectTimeZones($timezonesToInspect, $quadrantPolygon);
-        $analyzedResults = $this->analyzeIntersectedZones($intersectionResult, $curQuadrant, $lastLevelFlag);
-        return $analyzedResults;
+        $zonesAndNextQuadrants = $this->getAssociatedZonesAndNextQuadrants($intersectionResult, $curQuadrant, $lastLevelFlag);
+        return $zonesAndNextQuadrants;
     }
 
     /**
