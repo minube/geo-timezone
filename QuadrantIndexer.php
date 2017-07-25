@@ -174,7 +174,7 @@ class QuadrantIndexer extends QuadrantTree
             }
         }
         echo "timezonesToInspect(): \n";
-        print_r($timezonesToInspect);
+        //print_r($timezonesToInspect);
         return $timezonesToInspect;
     }
 
@@ -200,9 +200,9 @@ class QuadrantIndexer extends QuadrantTree
     protected function updateLookup($zoneResult, $curZoneId)
     {
         echo "Updating lookup: " . $curZoneId . "\n";
-        print_r($zoneResult);
-        echo "Init state lookup before update: \n";
-        print_r($this->lookup);
+        //print_r($zoneResult);
+        //echo "Init state lookup before update: \n";
+        //print_r($this->lookup);
         $levelPath   = explode(".", $curZoneId);
         $level = &$this->lookup;
 
@@ -220,11 +220,11 @@ class QuadrantIndexer extends QuadrantTree
                     }
                 }
             }
-            print_r($level[$levelId]);
+            //print_r($level[$levelId]);
             unset($level[$levelId]);
         }
-        echo "Current LOOKUP: \n";
-        print_r($this->lookup);
+        //echo "Current LOOKUP: \n";
+        //print_r($this->lookup);
     }
 
     protected function getFeatureCollection($features)
@@ -295,7 +295,7 @@ class QuadrantIndexer extends QuadrantTree
                     $curZone['bounds']
                 );
                 echo "updating nextZones\n";
-                print_r($nextZones);
+                //print_r($nextZones);
                 $zoneResult = array(
                     'a' => $intersectionResult['intersectedZones'],
                     'b' => $intersectionResult['intersectedZones'],
@@ -313,8 +313,9 @@ class QuadrantIndexer extends QuadrantTree
     protected function validIndexingPercentage($curLevel, $numZones)
     {
         $expectedAtLevel = pow(4, $curLevel + 1);
-        $curPctIndexed = ($expectedAtLevel - count($numZones)) / $expectedAtLevel;
-        echo "checking validIndexingPercentage()...  " . $curPctIndexed . " --> ";
+        $curPctIndexed = ($expectedAtLevel - $numZones) / $expectedAtLevel;
+        echo "checking validIndexingPercentage()...  " . $curLevel . ", ". $numZones . ", " . $expectedAtLevel .
+            " -> ". $curPctIndexed . " --> ";
         var_dump($curPctIndexed < self::TARGET_INDEX_PERCENT);
         return $curPctIndexed < self::TARGET_INDEX_PERCENT;
     }
@@ -333,7 +334,7 @@ class QuadrantIndexer extends QuadrantTree
             $timezonesToInspect = $this->detectTimeZonesToInspect($curZone);
             $intersectionResult = $this->inspectZones($timezonesToInspect, $geoBoundsPolygon);
             echo "IntersectionResult: \n";
-            print_r($intersectionResult);
+            //print_r($intersectionResult);
             $analyzedResults = $this->analyzeIntersectedZones($intersectionResult, $curZone, $lastLevelFlag);
             $nextZonesTmp = $analyzedResults['nextZones'];
             foreach($nextZonesTmp as $zoneToSave) {
@@ -349,7 +350,7 @@ class QuadrantIndexer extends QuadrantTree
         echo "Indexing timezones...\n";
         $this->initZoneLevels();
         $curLevel = 1;
-        $numZones = 0;
+        $numZones = 16;
         $lastLevel = 0;
 
         while ($this->validIndexingPercentage($curLevel, $numZones)) {
@@ -359,7 +360,6 @@ class QuadrantIndexer extends QuadrantTree
         }
         echo "Last Step: \n";
         $this->zoneLevels = $this->indexNextZones(true);
-        print_r($this->lookup);
         $this->writeQuadrantTreeJson();
     }
 
@@ -368,7 +368,6 @@ class QuadrantIndexer extends QuadrantTree
         echo "Saving features collection to json : " . $path . "\n";
         $directories = explode(QuadrantTree::DATA_DIRECTORY, $path)[1];
         $directories = explode("/", $directories);
-        print_r($directories);
         $currentDir = QuadrantTree::DATA_DIRECTORY;
         foreach ($directories as $dir) {
             $currentDir = $currentDir . "/" . $dir;
