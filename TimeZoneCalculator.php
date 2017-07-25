@@ -6,12 +6,21 @@ class TimeZoneCalculator
 {
     protected $quadrantTree;
 
+    /**
+     * TimeZoneCalculator constructor.
+     */
     public function __construct()
     {
         $this->quadrantTree = new QuadrantTree();
         $this->quadrantTree->initializeDataTree();
     }
 
+    /**
+     * Adjust the latitude value
+     * @param $latitude
+     * @return float|int
+     * @throws ErrorException
+     */
     protected function adjustLatitude($latitude)
     {
         if (null == $latitude || abs($latitude) > QuadrantTree::MAX_ABS_LATITUDE) {
@@ -24,6 +33,12 @@ class TimeZoneCalculator
         return $newLatitude;
     }
 
+    /**
+     * Adjust longitude value
+     * @param $longitude
+     * @return float|int
+     * @throws ErrorException
+     */
     protected function adjustLongitude($longitude)
     {
         $newLongitude = $longitude;
@@ -36,6 +51,12 @@ class TimeZoneCalculator
         return $newLongitude;
     }
 
+    /**
+     * Get timezone name from a particular location (latitude, longitude)
+     * @param $latitude
+     * @param $longitude
+     * @return null|string
+     */
     public function getTimeZoneName($latitude, $longitude)
     {
         $latitude = $this->adjustLatitude($latitude);
@@ -44,6 +65,13 @@ class TimeZoneCalculator
         return $timeZone;
     }
 
+    /**
+     * Get the local date belonging to a particular latitude, longitude and timestamp
+     * @param $latitude
+     * @param $longitude
+     * @param $timestamp
+     * @return DateTime
+     */
     public function getLocalDate($latitude, $longitude, $timestamp)
     {
         $timeZone = $this->getTimeZoneName($latitude, $longitude);
@@ -53,6 +81,13 @@ class TimeZoneCalculator
         return $date;
     }
 
+    /**
+     * Get timestamp from latitude, longitude and localTimestamp
+     * @param $latitude
+     * @param $longitude
+     * @param $localTimestamp
+     * @return mixed
+     */
     public function getCorrectTimestamp($latitude, $longitude, $localTimestamp)
     {
         $timeZoneName = $this->getTimeZoneName($latitude, $longitude);
