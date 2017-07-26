@@ -1,6 +1,6 @@
 <?php
 
-include_once('./lib/geoPHP.inc');
+include_once('./lib/geoPHP/geoPHP.inc');
 
 /**
  * Convert array of coordinates to polygon structured json array
@@ -24,7 +24,7 @@ function createPolygonJsonFromPoints($polygonPoints)
  */
 function createPolygonFromPoints($polygonPoints)
 {
-    $polygonData = self::createPolygonJsonFromPoints($polygonPoints);
+    $polygonData = createPolygonJsonFromPoints($polygonPoints);
     return geoPHP::load(json_encode($polygonData), 'json');
 }
 
@@ -63,8 +63,8 @@ function adaptQuadrantBoundsToPolygon($quadrantBounds)
  */
 function getQuadrantPolygon($quadrantBounds)
 {
-    $polygonPoints = self::adaptQuadrantBoundsToPolygon($quadrantBounds);
-    return self::createPolygonFromPoints($polygonPoints);
+    $polygonPoints = adaptQuadrantBoundsToPolygon($quadrantBounds);
+    return createPolygonFromPoints($polygonPoints);
 }
 
 /**
@@ -98,7 +98,7 @@ function getFeatureCollection($features)
     $featuresCollection = array(
         "type" => "FeatureCollection",
         "features" => array(
-            self::structureFeatures($features)
+            structureFeatures($features)
         )
     );
     return $featuresCollection;
@@ -112,8 +112,8 @@ function getFeatureCollection($features)
  */
 function intersection($geoFeaturesJsonA, $geoFeaturesJsonB)
 {
-    $polygonA = self::createPolygonFromJson($geoFeaturesJsonA);
-    $polygonB = self::createPolygonFromJson($geoFeaturesJsonB);
+    $polygonA = createPolygonFromJson($geoFeaturesJsonA);
+    $polygonB = createPolygonFromJson($geoFeaturesJsonB);
     $intersectionData = $polygonA->intersection($polygonB);
     return $intersectionData->out('json', true);
 }
