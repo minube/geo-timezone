@@ -1,7 +1,6 @@
 <?php
 
 include "QuadrantTree.php";
-include "GeometryUtils.php";
 
 
 class QuadrantIndexer extends QuadrantTree
