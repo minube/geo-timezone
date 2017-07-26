@@ -2,7 +2,7 @@
 
 include "QuadrantIndexer.php";
 
-const MAIN_DIR = "./data/";
+const MAIN_DIR = "./data";
 const DOWNLOAD_DIR = "./data/downloads/";
 const TIMEZONE_FILE_NAME = "timezones";
 const REPO_HOST = "https://api.github.com";
@@ -125,11 +125,45 @@ function updateData()
     echo("Rename timezones json...\n");
     //renameTimezoneJsonAndGetPath();
     echo("Remove previous data...\n");
-    removePreviousData(MAIN_DIR);
+    removePreviousData(MAIN_DIR . "/");
     echo("Creating quadrant tree data...\n");
     $geoIndexer = new QuadrantIndexer();
     $geoIndexer->createQuadrantTreeData();
+    echo("Zipping quadrant tree data...");
+    zipDir(MAIN_DIR, MAIN_DIR . ".zip");
 }
 
-updateData();
+
+function folderToZip($mainDir, &$zip, $exclusiveLength)
+{
+    $handle = opendir($mainDir);
+    while (false !== $f = readdir($handle)) {
+        if ($f != '.' && $f != '..') {
+            $filePath = "$mainDir/$f";
+            $localPath = substr($filePath, $exclusiveLength);
+            if (is_file($filePath)) {
+                $zip->addFile($filePath, $localPath);
+            } elseif (is_dir($filePath)) {
+                $zip->addEmptyDir($localPath);
+                folderToZip($filePath, $zip, $exclusiveLength);
+            }
+        }
+    }
+    closedir($handle);
+}
+
+function zipDir($sourcePath, $outZipPath)
+{
+    $pathInfo = pathInfo($sourcePath);
+    $parentPath = $pathInfo['dirname'];
+    $dirName = $pathInfo['basename'];
+
+    $z = new ZipArchive();
+    $z->open($outZipPath, ZIPARCHIVE::CREATE);
+    $z->addEmptyDir($dirName);
+    folderToZip($sourcePath, $z, strlen("$parentPath/"));
+    $z->close();
+}
+
+//updateData();
 
