@@ -76,16 +76,27 @@ function structureFeatures($features)
 {
     $structuredFeatures = array();
     foreach ($features as $feature) {
-        $structuredFeatures[] = array(
-            "type" => "Feature",
-            "geometry" => array(
-                "type" => $feature['type'],
-                "coordinates" => $feature['coordinates']
-            ),
-            "properties" => $feature['properties']
-        );
+        $structuredFeatures[] = structureOneFeature($feature);
     }
     return $structuredFeatures;
+}
+
+/**
+ * Structure an isolated feature
+ * @param $feature
+ * @return array
+ */
+function structureOneFeature($feature)
+{
+    $structuredFeature = array(
+        "type" => "Feature",
+        "geometry" => array(
+            "type" => $feature['type'],
+            "coordinates" => $feature['coordinates']
+        ),
+        "properties" => $feature['properties']
+    );
+    return $structuredFeature;
 }
 
 /**
@@ -116,4 +127,53 @@ function intersection($geoFeaturesJsonA, $geoFeaturesJsonB)
     $polygonB = createPolygonFromJson($geoFeaturesJsonB);
     $intersectionData = $polygonA->intersection($polygonB);
     return $intersectionData->out('json', true);
+}
+
+/**
+ * Check if a particular object point is IN the indicated polygon
+ * @param $point
+ * @param $polygon
+ * @return mixed
+ */
+function isInPolygon($point, $polygon)
+{
+    return $polygon->pointInPolygon($point);
+}
+
+/**
+ * Create a point geometry object from coordinates (latitude, longitude)
+ * @param $latitude
+ * @param $longitude
+ * @return bool|GeometryCollection|mixed
+ */
+function createPoint($latitude, $longitude)
+{
+    try {
+        $point = geoPHP::load('POINT(' . $latitude . ' ' . $longitude . ')', 'wkt');
+    } catch (Exception $exception) {
+        echo $exception->getMessage();
+        return null;
+    }
+    return $point;
+}
+
+/**
+ * Check if point (latitude, longitude) is IN a particular features polygon
+ * @param $features
+ * @param $latitude
+ * @param $longitude
+ * @return null|string
+ */
+function isPointInQuadrantFeatures($features, $latitude, $longitude)
+{
+    $timeZone = null;
+    $point = createPoint($latitude, $longitude);
+    foreach ($features['features'] as $feature) {
+        $polygon = createPolygonFromJson(createPolygonJsonFromPoints($feature['coordinates']));
+        if (isInPolygon($point, $polygon)) {
+            $timeZone = $feature['properties']['tzid'];
+            break;
+        }
+    }
+    return $timeZone;
 }

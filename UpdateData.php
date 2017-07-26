@@ -118,10 +118,15 @@ function removePreviousData($path)
 
 function updateData()
 {
-    downloadLastVersion();
-    unzipData(DOWNLOAD_DIR . TIMEZONE_FILE_NAME . ".zip");
-    $timezoneJsonPath = renameTimezoneJsonAndGetPath();
+    echo("Downloading data...\n");
+    //downloadLastVersion();
+    echo("Unzip data...\n");
+    //unzipData(DOWNLOAD_DIR . TIMEZONE_FILE_NAME . ".zip");
+    echo("Rename timezones json...\n");
+    //renameTimezoneJsonAndGetPath();
+    echo("Remove previous data...\n");
     removePreviousData(MAIN_DIR);
+    echo("Creating quadrant tree data...\n");
     $geoIndexer = new QuadrantIndexer();
     $geoIndexer->createQuadrantTreeData();
 }

@@ -1,6 +1,7 @@
 <?php
 
 include "Quadrant.php";
+include "GeometryUtils.php";
 
 class QuadrantTree extends Quadrant
 {
@@ -26,7 +27,6 @@ class QuadrantTree extends Quadrant
     protected function loadFeatures($quadrantPath)
     {
         $filePath = implode('/', str_split($quadrantPath));
-        $filePath = self::DATA_DIRECTORY; //TODO REMOVE
         $geoJson = json_decode(file_get_contents($filePath . self::GEO_FEATURE_FILENAME), true);
         return $geoJson;
     }
@@ -41,44 +41,7 @@ class QuadrantTree extends Quadrant
     protected function evaluateFeatures($quadrantPath, $latitude, $longitude)
     {
         $features = $this->loadFeatures($quadrantPath);
-        $timeZone = $this->isInQuadrantFeatures($features, $latitude, $longitude);
-        return $timeZone;
-    }
-
-    /**
-     * Create geoPHP Polygon from feature data json
-     * @param $feature
-     * @return mixed
-     */
-    protected function getPolygon($feature)
-    {
-        $feature = json_encode($feature);
-        $coordinatesPolygon = explode('"geometry":', $feature)[1];
-        $coordinatesPolygon = explode(',"properties"', $coordinatesPolygon)[0];
-        $coordinatesPolygon = str_replace("MultiPolygon", "Polygon", $coordinatesPolygon);
-        $coordinatesPolygon = str_replace("[[[", "[[", $coordinatesPolygon);
-        $coordinatesPolygon = str_replace("]]]", "]]", $coordinatesPolygon);
-        return geoPHP::load($coordinatesPolygon, 'json');
-    }
-
-    /**
-     * Check if point (latitude, longitude) is IN a particular features polygon
-     * @param $features
-     * @param $latitude
-     * @param $longitude
-     * @return null
-     */
-    protected function isInQuadrantFeatures($features, $latitude, $longitude)
-    {
-        $timeZone = null;
-        $point = geoPHP::load('POINT(' . $latitude . ' ' . $longitude . ')', 'wkt');
-        foreach ($features['features'] as $feature) {
-            $polygon = $this->getPolygon($feature);
-            if ($polygon->pointInPolygon($point)) {
-                $timeZone = $feature['properties']['tzid'];
-                break;
-            }
-        }
+        $timeZone = isPointInQuadrantFeatures($features, $latitude, $longitude);
         return $timeZone;
     }
 
