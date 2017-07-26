@@ -1,6 +1,6 @@
 <?php
 
-include_once('./lib/geoPHP/geoPHP.inc');
+include_once('./vendor/phayes/geophp/geoPHP.inc');
 
 /**
  * Convert array of coordinates to polygon structured json array
@@ -9,12 +9,10 @@ include_once('./lib/geoPHP/geoPHP.inc');
  */
 function createPolygonJsonFromPoints($polygonPoints)
 {
-    $polygonData = array(
+    return array(
         'type' => "Polygon",
         'coordinates' => $polygonPoints
     );
-
-    return $polygonData;
 }
 
 /**
