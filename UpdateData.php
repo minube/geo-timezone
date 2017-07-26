@@ -194,18 +194,20 @@ function zipDir($sourcePath, $outZipPath)
  */
 function updateData()
 {
-    echo("Downloading data...\n");
-    //downloadLastVersion();
-    echo("Unzip data...\n");
-    //unzipData(DOWNLOAD_DIR . TIMEZONE_FILE_NAME . ".zip");
-    echo("Rename timezones json...\n");
-    //renameTimezoneJson();
-    echo("Remove previous data...\n");
+    echo "Downloading data...\n";
+    downloadLastVersion();
+    echo "Unzip data...\n";
+    unzipData(DOWNLOAD_DIR . TIMEZONE_FILE_NAME . ".zip");
+    echo "Rename timezones json...\n";
+    renameTimezoneJson();
+    echo "Remove previous data...\n";
     removePreviousData(MAIN_DIR . "/");
-    echo("Creating quadrant tree data...\n");
+    echo "Creating quadrant tree data...\n";
     $geoIndexer = new QuadrantIndexer();
     $geoIndexer->createQuadrantTreeData();
-    echo("Zipping quadrant tree data...");
+    echo "Remove downloaded data...\n";
+    removePreviousData(DOWNLOAD_DIR);
+    echo "Zipping quadrant tree data...";
     zipDir(MAIN_DIR, MAIN_DIR . ".zip");
 }
 
