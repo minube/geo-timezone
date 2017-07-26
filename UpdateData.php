@@ -12,6 +12,11 @@ const GEO_JSON_DEFAULT_URL = "none";
 const GEO_JSON_DEFAULT_NAME = "geojson";
 
 
+/**
+ * Get complete json response from repo
+ * @param $url
+ * @return mixed
+ */
 function getResponse($url)
 {
     $curl = curl_init();
@@ -25,11 +30,21 @@ function getResponse($url)
     return $response;
 }
 
+/**
+ * Download zip file
+ * @param $url
+ * @param string $destinationPath
+ */
 function getZipResponse($url, $destinationPath="none")
 {
     exec("wget {$url} --output-document={$destinationPath}");
 }
 
+/**
+ * Get timezones json url
+ * @param $data
+ * @return string
+ */
 function getGeoJsonUrl($data)
 {
     $jsonResp = json_decode($data, true);
@@ -43,6 +58,9 @@ function getGeoJsonUrl($data)
     return $geoJsonUrl;
 }
 
+/**
+ * Download last version reference repo
+ */
 function downloadLastVersion()
 {
     $response = getResponse(REPO_HOST . REPO_PATH);
@@ -56,6 +74,11 @@ function downloadLastVersion()
     }
 }
 
+/**
+ * Unzip data
+ * @param $filePath
+ * @return bool
+ */
 function unzipData($filePath)
 {
     $zip = new ZipArchive;
@@ -73,7 +96,11 @@ function unzipData($filePath)
     return $controlFlag;
 }
 
-function renameTimezoneJsonAndGetPath()
+/**
+ * Rename downloaded timezones json file
+ * @return bool
+ */
+function renameTimezoneJson()
 {
     $path = realpath(DOWNLOAD_DIR. TIMEZONE_FILE_NAME . "/");
     $files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path));
@@ -87,6 +114,10 @@ function renameTimezoneJsonAndGetPath()
     return rename($jsonPath, dirname($jsonPath) . "/" . TIMEZONE_FILE_NAME . ".json");
 }
 
+/**
+ * Remove all directories tree in main data folder
+ * @param $path
+ */
 function removePreviousData($path)
 {
     $validDir = array(
@@ -116,24 +147,12 @@ function removePreviousData($path)
     return;
 }
 
-function updateData()
-{
-    echo("Downloading data...\n");
-    //downloadLastVersion();
-    echo("Unzip data...\n");
-    //unzipData(DOWNLOAD_DIR . TIMEZONE_FILE_NAME . ".zip");
-    echo("Rename timezones json...\n");
-    //renameTimezoneJsonAndGetPath();
-    echo("Remove previous data...\n");
-    removePreviousData(MAIN_DIR . "/");
-    echo("Creating quadrant tree data...\n");
-    $geoIndexer = new QuadrantIndexer();
-    $geoIndexer->createQuadrantTreeData();
-    echo("Zipping quadrant tree data...");
-    zipDir(MAIN_DIR, MAIN_DIR . ".zip");
-}
-
-
+/**
+ * Add folder to zip file
+ * @param $mainDir
+ * @param $zip
+ * @param $exclusiveLength
+ */
 function folderToZip($mainDir, &$zip, $exclusiveLength)
 {
     $handle = opendir($mainDir);
@@ -152,6 +171,11 @@ function folderToZip($mainDir, &$zip, $exclusiveLength)
     closedir($handle);
 }
 
+/**
+ * Compress directory
+ * @param $sourcePath
+ * @param $outZipPath
+ */
 function zipDir($sourcePath, $outZipPath)
 {
     $pathInfo = pathInfo($sourcePath);
@@ -165,5 +189,25 @@ function zipDir($sourcePath, $outZipPath)
     $z->close();
 }
 
-//updateData();
+/**
+ * Main function that runs all updating process
+ */
+function updateData()
+{
+    echo("Downloading data...\n");
+    //downloadLastVersion();
+    echo("Unzip data...\n");
+    //unzipData(DOWNLOAD_DIR . TIMEZONE_FILE_NAME . ".zip");
+    echo("Rename timezones json...\n");
+    //renameTimezoneJson();
+    echo("Remove previous data...\n");
+    removePreviousData(MAIN_DIR . "/");
+    echo("Creating quadrant tree data...\n");
+    $geoIndexer = new QuadrantIndexer();
+    $geoIndexer->createQuadrantTreeData();
+    echo("Zipping quadrant tree data...");
+    zipDir(MAIN_DIR, MAIN_DIR . ".zip");
+}
+
+updateData();
 
