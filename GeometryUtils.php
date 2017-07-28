@@ -106,9 +106,7 @@ function getFeatureCollection($features)
 {
     $featuresCollection = array(
         "type" => "FeatureCollection",
-        "features" => array(
-            structureFeatures($features)
-        )
+        "features" => structureFeatures($features)
     );
     return $featuresCollection;
 }
@@ -146,11 +144,12 @@ function isInPolygon($point, $polygon)
  */
 function createPoint($latitude, $longitude)
 {
+    $point = null;
     try {
-        $point = geoPHP::load('POINT(' . $latitude . ' ' . $longitude . ')', 'wkt');
+        $formattedPoint = "POINT({$longitude} {$latitude})";
+        $point = geoPHP::load($formattedPoint, 'wkt');
     } catch (Exception $exception) {
         echo $exception->getMessage();
-        return null;
     }
     return $point;
 }
@@ -166,11 +165,13 @@ function isPointInQuadrantFeatures($features, $latitude, $longitude)
 {
     $timeZone = null;
     $point = createPoint($latitude, $longitude);
-    foreach ($features['features'] as $feature) {
-        $polygon = createPolygonFromJson(createPolygonJsonFromPoints($feature['coordinates']));
-        if (isInPolygon($point, $polygon)) {
-            $timeZone = $feature['properties']['tzid'];
-            break;
+    if($point != null) {
+        foreach ($features['features'] as $feature) {
+            $polygon = createPolygonFromJson(createPolygonJsonFromPoints($feature['geometry']['coordinates']));
+            if (isInPolygon($point, $polygon)) {
+                $timeZone = $feature['properties']['tzid'];
+                break;
+            }
         }
     }
     return $timeZone;
