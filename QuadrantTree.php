@@ -61,11 +61,9 @@ class QuadrantTree extends Quadrant
         if (!isset($zoneData)) {
             throw new ErrorException('Unexpected data type');
         } elseif ($zoneData === "f") {
-            echo "f\n";
             $validTimezone = $this->evaluateFeatures($quadrantPath, $latitude, $longitude);
         } elseif (is_numeric($zoneData)) {
             $validTimezone = $this->dataTree['timezones'][$zoneData];
-            echo "numeric\n";
         }
         return $validTimezone;
     }

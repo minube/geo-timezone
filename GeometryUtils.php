@@ -132,14 +132,37 @@ function intersection($geoFeaturesJsonA, $geoFeaturesJsonB)
 }
 
 /**
- * Check if a particular object point is IN the indicated polygon
+ * Check if a particular object point is IN the indicated polygon (source: https://github.com/sookoll/geoPHP.git)
+ * and if it is not contained inside, it checks the boundaries
  * @param $point
  * @param $polygon
  * @return mixed
  */
 function isInPolygon($point, $polygon)
 {
-    return $polygon->pointInPolygon($point);
+    $isInside = false;
+    foreach ($polygon->components as $component) {
+        $polygonPoints = $component->getComponents();
+        $numPoints = count($polygonPoints);
+        $pointIdxBack = $numPoints - 1;
+        for ($pointIdx=0; $pointIdx < $numPoints; $pointIdx++) {
+            if (
+                ($polygonPoints[$pointIdx]->y() > $point->y()) != ($polygonPoints[$pointIdxBack]->y() > $point->y()) &&
+                (
+                    $point->x() <
+                    ($polygonPoints[$pointIdxBack]->x() - $polygonPoints[$pointIdx]->x()) *
+                    ($point->y() - $polygonPoints[$pointIdx]->y())
+                    / ($polygonPoints[$pointIdxBack]->y() - $polygonPoints[$pointIdx]->y()) +
+                    $polygonPoints[$pointIdx]->x()
+                )
+            ) {
+                $isInside = true;
+                break;
+            }
+            $pointIdxBack = $pointIdx;
+        }
+    }
+    return $isInside;
 }
 
 /**
@@ -171,9 +194,9 @@ function isPointInQuadrantFeatures($features, $latitude, $longitude)
 {
     $timeZone = null;
     $point = createPoint($latitude, $longitude);
-    if($point != null) {
+    if ($point != null) {
         foreach ($features['features'][0] as $feature) {
-            foreach($feature['geometry']['coordinates'] as $polygonFeatures) {
+            foreach ($feature['geometry']['coordinates'] as $polygonFeatures) {
                 $polygon = createPolygonFromJson(json_encode(createPolygonJsonFromPoints($polygonFeatures)));
                 if (isInPolygon($point, $polygon)) {
                     $timeZone = $feature['properties']['tzid'];
