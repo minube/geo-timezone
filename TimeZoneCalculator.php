@@ -23,10 +23,10 @@ class TimeZoneCalculator
      */
     protected function adjustLatitude($latitude)
     {
+        $newLatitude = $latitude;
         if (null == $latitude || abs($latitude) > QuadrantTree::MAX_ABS_LATITUDE) {
             throw new ErrorException('Invalid latitude: ' . $latitude);
         }
-        $newLatitude = $latitude;
         if (abs($latitude) == QuadrantTree::MAX_ABS_LATITUDE) {
             $newLatitude = ($latitude / QuadrantTree::MAX_ABS_LATITUDE) * QuadrantTree::ABS_LATITUDE_LIMIT;
         }
