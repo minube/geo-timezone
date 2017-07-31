@@ -26,8 +26,9 @@ class QuadrantTree extends Quadrant
      */
     protected function loadFeatures($quadrantPath)
     {
-        $filePath = implode('/', str_split($quadrantPath));
-        $geoJson = json_decode(file_get_contents($filePath . self::GEO_FEATURE_FILENAME), true);
+        $filePath = self::DATA_DIRECTORY . implode('/', str_split($quadrantPath)) . DIRECTORY_SEPARATOR .
+            self::GEO_FEATURE_FILENAME;
+        $geoJson = json_decode(file_get_contents($filePath), true);
         return $geoJson;
     }
 
@@ -58,13 +59,13 @@ class QuadrantTree extends Quadrant
     {
         $validTimezone = 'none';
         if (!isset($zoneData)) {
-            $validTimezone = null;
-        } elseif ($zoneData === 'f') {
+            throw new ErrorException('Unexpected data type');
+        } elseif ($zoneData === "f") {
+            echo "f\n";
             $validTimezone = $this->evaluateFeatures($quadrantPath, $latitude, $longitude);
         } elseif (is_numeric($zoneData)) {
             $validTimezone = $this->dataTree['timezones'][$zoneData];
-        } elseif (!isset($zoneData)) {
-            throw new ErrorException('Unexpected data type');
+            echo "numeric\n";
         }
         return $validTimezone;
     }
@@ -88,7 +89,7 @@ class QuadrantTree extends Quadrant
     public function lookForTimeZone($latitude, $longitude)
     {
         $geoQuadrant = new Quadrant();
-        $timeZone = 'none';
+        $timeZone = "none";
         $quadrantPath = '';
         $quadrantTree = $this->dataTree['lookup'];
 
