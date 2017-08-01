@@ -145,7 +145,7 @@ function isInPolygon($point, $polygon)
         $polygonPoints = $component->getComponents();
         $numPoints = count($polygonPoints);
         $pointIdxBack = $numPoints - 1;
-        for ($pointIdx=0; $pointIdx < $numPoints; $pointIdx++) {
+        for ($pointIdx = 0; $pointIdx < $numPoints; $pointIdx++) {
             if (
                 ($polygonPoints[$pointIdx]->y() > $point->y()) != ($polygonPoints[$pointIdxBack]->y() > $point->y()) &&
                 (
@@ -163,6 +163,17 @@ function isInPolygon($point, $polygon)
         }
     }
     return $isInside;
+}
+
+/**
+ * Check if point is ON the boundaries of the polygon
+ * @param $point
+ * @param $polygon
+ * @return mixed
+ */
+function isOnPolygonBoundaries($point, $polygon)
+{
+    return $polygon->pointOnVertex($point);
 }
 
 /**
@@ -198,7 +209,7 @@ function isPointInQuadrantFeatures($features, $latitude, $longitude)
         foreach ($features['features'][0] as $feature) {
             foreach ($feature['geometry']['coordinates'] as $polygonFeatures) {
                 $polygon = createPolygonFromJson(json_encode(createPolygonJsonFromPoints($polygonFeatures)));
-                if (isInPolygon($point, $polygon)) {
+                if (isInPolygon($point, $polygon) || isOnPolygonBoundaries($point, $polygon)) {
                     $timeZone = $feature['properties']['tzid'];
                     break;
                 }

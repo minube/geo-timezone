@@ -77,7 +77,7 @@ class TimeZoneCalculator
         $timeZone = $this->getTimeZoneName($latitude, $longitude);
         $date = new DateTime();
         $date->setTimestamp($timestamp);
-        if($timeZone != null) {
+        if ($timeZone != null) {
             $date->setTimezone(new DateTimeZone($timeZone));
         }
         return $date;
@@ -92,17 +92,15 @@ class TimeZoneCalculator
      */
     public function getCorrectTimestamp($latitude, $longitude, $localTimestamp)
     {
-        echo $latitude . ", " . $longitude . ", ". $localTimestamp . "\n";
         $timestamp = $localTimestamp;
         $timeZoneName = $this->getTimeZoneName($latitude, $longitude);
-        echo $timeZoneName . "\n";
-        if($timeZoneName != "none") {
+        if ($timeZoneName != "none") {
             $date = new DateTime();
             $date->setTimestamp($localTimestamp);
-            if($timeZoneName != null) {
+            if ($timeZoneName != null) {
                 $date->setTimezone(new DateTimeZone($timeZoneName));
             }
-            $timestamp = $date->getOffset()!= FALSE ? $localTimestamp - $date->getOffset() : $localTimestamp;
+            $timestamp = $date->getOffset() != false ? $localTimestamp - $date->getOffset() : $localTimestamp;
         }
         return $timestamp;
     }
