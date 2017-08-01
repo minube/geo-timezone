@@ -225,8 +225,7 @@ class QuadrantIndexer extends QuadrantTree
             if ($lastLevelFlag) {
                 $features = $this->getIntersectionFeatures($intersectionResult, $curQuadrant);
                 $featuresCollection = getFeatureCollection($features);
-                $featuresPath = QuadrantTree::DATA_DIRECTORY .
-                    str_replace('.', "/", $curQuadrant['id']) . "/";
+                $featuresPath = QuadrantTree::DATA_DIRECTORY . str_replace('.', "/", $curQuadrant['id']) . "/";
                 $this->writeGeoFeaturesToJson($featuresCollection, $featuresPath);
                 $zoneResult = 'f';
             } else {
@@ -400,7 +399,9 @@ class QuadrantIndexer extends QuadrantTree
         $quadrantPolygon = getQuadrantPolygon($quadrantBounds);
         $timezonesToInspect = $this->selectTimeZonesToInspect($curQuadrant);
         $intersectionResult = $this->whichTimeZonesIntersect($timezonesToInspect, $quadrantPolygon);
-        $zonesAndNextQuadrants = $this->getAssociatedZonesAndNextQuadrants($intersectionResult, $curQuadrant,
+        $zonesAndNextQuadrants = $this->getAssociatedZonesAndNextQuadrants(
+            $intersectionResult,
+            $curQuadrant,
             $lastLevelFlag);
         return $zonesAndNextQuadrants;
     }
