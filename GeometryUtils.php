@@ -11,7 +11,7 @@ function createPolygonJsonFromPoints($polygonPoints)
 {
     return array(
         'type' => "Polygon",
-        'coordinates' => structureCoordinatesPolygon($polygonPoints)
+        'coordinates' => structurePolygonCoordinates($polygonPoints)
     );
 }
 
@@ -20,7 +20,7 @@ function createPolygonJsonFromPoints($polygonPoints)
  * @param $polygonPoints
  * @return array
  */
-function structureCoordinatesPolygon($polygonPoints)
+function structurePolygonCoordinates($polygonPoints)
 {
     $structuredCoordinates = array();
     foreach ($polygonPoints as $points) {
