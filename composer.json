@@ -6,7 +6,7 @@
         }
     ],
     "autoload": {
-      "classmap": ["geoPHP.inc"]
+      "files": ["geoPHP.inc"]
     },
     "require": {
         "phayes/geoPHP": "1.2.*"

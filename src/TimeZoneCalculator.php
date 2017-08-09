@@ -1,6 +1,6 @@
 <?php
 
-include "QuadrantTree.php";
+use Quadrant\Tree;
 
 class TimeZoneCalculator
 {
@@ -11,7 +11,7 @@ class TimeZoneCalculator
      */
     public function __construct()
     {
-        $this->quadrantTree = new QuadrantTree();
+        $this->quadrantTree = new Tree();
         $this->quadrantTree->initializeDataTree();
     }
 
@@ -24,11 +24,11 @@ class TimeZoneCalculator
     protected function adjustLatitude($latitude)
     {
         $newLatitude = $latitude;
-        if (null == $latitude || abs($latitude) > QuadrantTree::MAX_ABS_LATITUDE) {
+        if (null == $latitude || abs($latitude) > Tree::MAX_ABS_LATITUDE) {
             throw new ErrorException('Invalid latitude: ' . $latitude);
         }
-        if (abs($latitude) == QuadrantTree::MAX_ABS_LATITUDE) {
-            $newLatitude = ($latitude / QuadrantTree::MAX_ABS_LATITUDE) * QuadrantTree::ABS_LATITUDE_LIMIT;
+        if (abs($latitude) == Tree::MAX_ABS_LATITUDE) {
+            $newLatitude = ($latitude / Tree::MAX_ABS_LATITUDE) * Tree::ABS_LATITUDE_LIMIT;
         }
         return $newLatitude;
     }
@@ -42,11 +42,11 @@ class TimeZoneCalculator
     protected function adjustLongitude($longitude)
     {
         $newLongitude = $longitude;
-        if (null == $longitude || abs($longitude) > QuadrantTree::MAX_ABS_LONGITUDE) {
+        if (null == $longitude || abs($longitude) > Tree::MAX_ABS_LONGITUDE) {
             throw new ErrorException('Invalid latitude: ' . $longitude);
         }
-        if (abs($longitude) == QuadrantTree::MAX_ABS_LONGITUDE) {
-            $newLongitude = ($longitude / QuadrantTree::MAX_ABS_LONGITUDE) * QuadrantTree::ABS_LONGITUDE_LIMIT;
+        if (abs($longitude) == Tree::MAX_ABS_LONGITUDE) {
+            $newLongitude = ($longitude / Tree::MAX_ABS_LONGITUDE) * Tree::ABS_LONGITUDE_LIMIT;
         }
         return $newLongitude;
     }

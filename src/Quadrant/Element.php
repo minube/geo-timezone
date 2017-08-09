@@ -1,6 +1,8 @@
 <?php
 
-class Quadrant
+namespace Quadrant;
+
+class Element
 {
     const MAX_ABS_LATITUDE = 90.0;
     const MAX_ABS_LONGITUDE = 180.0;
@@ -20,9 +22,9 @@ class Quadrant
     protected $level;
 
     /**
-     * Quadrant constructor.
+     * Element constructor.
      */
-    function __construct()
+    public function __construct()
     {
         $this->top = self::MAX_ABS_LATITUDE;
         $this->bottom = (-1) * self::MAX_ABS_LATITUDE;

@@ -1,9 +1,9 @@
 <?php
 
-include "QuadrantIndexer.php";
+include "Indexer.php";
 
-const MAIN_DIR = "./data";
-const DOWNLOAD_DIR = "./data/downloads/";
+const MAIN_DIR = "../data";
+const DOWNLOAD_DIR = "../data/downloads/";
 const TIMEZONE_FILE_NAME = "timezones";
 const REPO_HOST = "https://api.github.com";
 const REPO_USER = "node-geo-tz";
@@ -121,10 +121,10 @@ function renameTimezoneJson()
 function removePreviousData($path)
 {
     $validDir = array(
-        QuadrantIndexer::LEVEL_A,
-        QuadrantIndexer::LEVEL_B,
-        QuadrantIndexer::LEVEL_C,
-        QuadrantIndexer::LEVEL_D
+        Indexer::LEVEL_A,
+        Indexer::LEVEL_B,
+        Indexer::LEVEL_C,
+        Indexer::LEVEL_D
     );
     if (is_dir($path)) {
         $objects = scandir($path);
@@ -195,15 +195,15 @@ function zipDir($sourcePath, $outZipPath)
 function updateData()
 {
     echo "Downloading data...\n";
-    downloadLastVersion();
+    //downloadLastVersion();
     echo "Unzip data...\n";
-    unzipData(DOWNLOAD_DIR . TIMEZONE_FILE_NAME . ".zip");
+    //unzipData(DOWNLOAD_DIR . TIMEZONE_FILE_NAME . ".zip");
     echo "Rename timezones json...\n";
-    renameTimezoneJson();
+    //renameTimezoneJson();
     echo "Remove previous data...\n";
-    removePreviousData(MAIN_DIR . "/");
+    //removePreviousData(MAIN_DIR . "/");
     echo "Creating quadrant tree data...\n";
-    $geoIndexer = new QuadrantIndexer();
+    $geoIndexer = new Indexer();
     $geoIndexer->createQuadrantTreeData();
     echo "Remove downloaded data...\n";
     removePreviousData(DOWNLOAD_DIR);

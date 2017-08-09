@@ -1,12 +1,14 @@
 <?php
 
-include "Quadrant.php";
-include "GeometryUtils.php";
+namespace Quadrant;
 
-class QuadrantTree extends Quadrant
+use Geometry\Utils;
+
+
+class Tree extends Element
 {
     const DATA_TREE_FILENAME = "index.json";
-    const DATA_DIRECTORY = "./data/";
+    const DATA_DIRECTORY = "../data/";
     const GEO_FEATURE_FILENAME = "geo.json";
     protected $dataTree = null;
 
@@ -42,7 +44,7 @@ class QuadrantTree extends Quadrant
     protected function evaluateFeatures($quadrantPath, $latitude, $longitude)
     {
         $features = $this->loadFeatures($quadrantPath);
-        $timeZone = isPointInQuadrantFeatures($features, $latitude, $longitude);
+        $timeZone = Utils::isPointInQuadrantFeatures($features, $latitude, $longitude);
         return $timeZone;
     }
 
@@ -86,7 +88,7 @@ class QuadrantTree extends Quadrant
      */
     public function lookForTimeZone($latitude, $longitude)
     {
-        $geoQuadrant = new Quadrant();
+        $geoQuadrant = new Element();
         $timeZone = "none";
         $quadrantPath = '';
         $quadrantTree = $this->dataTree['lookup'];
