@@ -11,8 +11,27 @@ function createPolygonJsonFromPoints($polygonPoints)
 {
     return array(
         'type' => "Polygon",
-        'coordinates' => $polygonPoints
+        'coordinates' => structurePolygonCoordinates($polygonPoints)
     );
+}
+
+/**
+ * Structure polygon coordinates as geoPHP needs
+ * @param $polygonPoints
+ * @return array
+ */
+function structurePolygonCoordinates($polygonPoints)
+{
+    $structuredCoordinates = array();
+    foreach ($polygonPoints as $points) {
+        if(count($points) == 2)
+        {
+            $structuredCoordinates[] = $polygonPoints;
+            break;
+        }
+        $structuredCoordinates[] = $points;
+    }
+    return $structuredCoordinates;
 }
 
 /**
