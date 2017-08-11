@@ -1,9 +1,5 @@
 <?php
 
-/**
- * User: anabelenmejia
- * Date: 11/07/17
- */
 class Quadrant
 {
     const MAX_ABS_LATITUDE = 90.0;
@@ -23,6 +19,9 @@ class Quadrant
     protected $midLon;
     protected $level;
 
+    /**
+     * Quadrant constructor.
+     */
     function __construct()
     {
         $this->top = self::MAX_ABS_LATITUDE;
@@ -34,6 +33,11 @@ class Quadrant
         $this->level = self::LEVEL_A;
     }
 
+    /**
+     * Move the current quadrant to a particular location (latitude, longitude)
+     * @param $latitude
+     * @param $longitude
+     */
     public function moveToNextQuadrant($latitude, $longitude)
     {
         if ($latitude >= $this->midLat) {
@@ -56,12 +60,19 @@ class Quadrant
         }
     }
 
+    /**
+     * Update the mid coordinates attributes of the quadrant
+     */
     public function updateMidCoordinates()
     {
         $this->midLat = ($this->top + $this->bottom) / 2.0;
         $this->midLon = ($this->left + $this->right) / 2.0;
     }
 
+    /**
+     * Get the quadrant level (a, b, c or d)
+     * @return string
+     */
     public function getLevel()
     {
         return $this->level;
