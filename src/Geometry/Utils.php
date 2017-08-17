@@ -2,6 +2,8 @@
 
 namespace Geometry;
 
+use geoPHP;
+
 class Utils
 {
     /**

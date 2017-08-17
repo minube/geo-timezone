@@ -1,14 +1,25 @@
 {
-    "repositories": [
-        {
-            "type": "git",
-            "url": "https://github.com/phayes/geoPHP"
-        }
-    ],
-    "autoload": {
-      "files": ["geoPHP.inc"]
-    },
-    "require": {
-        "phayes/geoPHP": "1.2.*"
+  "repositories": [
+    {
+      "type": "git",
+      "url": "https://github.com/phayes/geoPHP",
+      "autoload": {
+        "files": [
+          "geoPHP.inc"
+        ]
+      }
     }
+  ],
+  "require": {
+    "phayes/geoPHP": "1.2.*"
+  },
+  "autoload": {
+    "psr-4": {
+      "src\\Geometry\\": "Geometry/",
+      "src\\Quadrant\\": "Quadrant/"
+    }
+  },
+  "config": {
+    "vendor-dir": "vendor"
+  }
 }

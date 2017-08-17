@@ -1,6 +1,6 @@
 <?php
 
-include "Indexer.php";
+use Quadrant\Indexer as Indexer;
 
 const MAIN_DIR = "../data";
 const DOWNLOAD_DIR = "../data/downloads/";

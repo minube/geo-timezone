@@ -1,5 +1,7 @@
 <?php
 
+namespace TimeZoneCalculator;
+
 use Quadrant\Tree;
 
 class TimeZoneCalculator
