@@ -15,9 +15,9 @@
   },
   "autoload": {
     "psr-4": {
-      "Geometry\\": "src/Geometry",
-      "Quadrant\\": "src/Quadrant",
-      "TimeZoneCalculator\\": "src/TimeZoneCalculator"
+      "Timezone\\Geometry\\": "src/Timezone/Geometry",
+      "Timezone\\Quadrant\\": "src/Timezone/Quadrant",
+      "TimeZone\\": "src/TimeZone"
     }
   },
   "config": {

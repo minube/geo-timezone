@@ -1,15 +1,15 @@
 <?php
 
-namespace TimeZoneCalculator;
+namespace TimeZone;
 
-use Quadrant\Tree;
+use TimeZone\Quadrant\Tree;
 
-class TimeZoneCalculator
+class Calculator
 {
     protected $quadrantTree;
 
     /**
-     * TimeZoneCalculator constructor.
+     * TimeZone constructor.
      */
     public function __construct()
     {
@@ -21,13 +21,13 @@ class TimeZoneCalculator
      * Adjust the latitude value
      * @param $latitude
      * @return float|int
-     * @throws ErrorException
+     * @throws \ErrorException
      */
     protected function adjustLatitude($latitude)
     {
         $newLatitude = $latitude;
         if (null == $latitude || abs($latitude) > Tree::MAX_ABS_LATITUDE) {
-            throw new ErrorException('Invalid latitude: ' . $latitude);
+            throw new \ErrorException('Invalid latitude: ' . $latitude);
         }
         if (abs($latitude) == Tree::MAX_ABS_LATITUDE) {
             $newLatitude = ($latitude / Tree::MAX_ABS_LATITUDE) * Tree::ABS_LATITUDE_LIMIT;
@@ -39,13 +39,13 @@ class TimeZoneCalculator
      * Adjust longitude value
      * @param $longitude
      * @return float|int
-     * @throws ErrorException
+     * @throws \ErrorException
      */
     protected function adjustLongitude($longitude)
     {
         $newLongitude = $longitude;
         if (null == $longitude || abs($longitude) > Tree::MAX_ABS_LONGITUDE) {
-            throw new ErrorException('Invalid latitude: ' . $longitude);
+            throw new \ErrorException('Invalid latitude: ' . $longitude);
         }
         if (abs($longitude) == Tree::MAX_ABS_LONGITUDE) {
             $newLongitude = ($longitude / Tree::MAX_ABS_LONGITUDE) * Tree::ABS_LONGITUDE_LIMIT;
@@ -72,15 +72,15 @@ class TimeZoneCalculator
      * @param $latitude
      * @param $longitude
      * @param $timestamp
-     * @return DateTime
+     * @return \DateTime
      */
     public function getLocalDate($latitude, $longitude, $timestamp)
     {
         $timeZone = $this->getTimeZoneName($latitude, $longitude);
-        $date = new DateTime();
+        $date = new \DateTime();
         $date->setTimestamp($timestamp);
         if ($timeZone != null) {
-            $date->setTimezone(new DateTimeZone($timeZone));
+            $date->setTimezone(new \DateTimeZone($timeZone));
         }
         return $date;
     }
@@ -97,10 +97,10 @@ class TimeZoneCalculator
         $timestamp = $localTimestamp;
         $timeZoneName = $this->getTimeZoneName($latitude, $longitude);
         if ($timeZoneName != "none") {
-            $date = new DateTime();
+            $date = new \DateTime();
             $date->setTimestamp($localTimestamp);
             if ($timeZoneName != null) {
-                $date->setTimezone(new DateTimeZone($timeZoneName));
+                $date->setTimezone(new \DateTimeZone($timeZoneName));
             }
             $timestamp = $date->getOffset() != false ? $localTimestamp - $date->getOffset() : $localTimestamp;
         }

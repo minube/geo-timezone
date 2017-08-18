@@ -1,6 +1,6 @@
 <?php
 
-namespace Geometry;
+namespace TimeZone\Geometry;
 
 use geoPHP;
 
@@ -15,7 +15,7 @@ class Utils
     {
         return array(
             'type' => "Polygon",
-            'coordinates' => structurePolygonCoordinates($polygonPoints)
+            'coordinates' => $this->structurePolygonCoordinates($polygonPoints)
         );
     }
     
