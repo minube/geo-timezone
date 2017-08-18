@@ -8,16 +8,25 @@ use TimeZone\Geometry\Utils;
 class Tree extends Element
 {
     const DATA_TREE_FILENAME = "index.json";
-    const DATA_DIRECTORY = __DIR__ . "/../../data/";
+    const DATA_DIRECTORY = "/../../data/";
     const GEO_FEATURE_FILENAME = "geo.json";
     protected $dataTree = null;
-
+    protected $dataDirectory;
+    
+    /**
+     * Tree constructor.
+     */
+    public function __construct()
+    {
+        $this->dataDirectory = __DIR__ . self::DATA_DIRECTORY;
+    }
+    
     /**
      * Data tree is loaded from json file
      */
     public function initializeDataTree()
     {
-        $jsonData = file_get_contents(self::DATA_DIRECTORY . self::DATA_TREE_FILENAME);
+        $jsonData = file_get_contents($this->dataDirectory . self::DATA_TREE_FILENAME);
         $this->dataTree = json_decode($jsonData, true);
     }
 
@@ -28,7 +37,7 @@ class Tree extends Element
      */
     protected function loadFeatures($quadrantPath)
     {
-        $filePath = self::DATA_DIRECTORY . implode('/', str_split($quadrantPath)) . DIRECTORY_SEPARATOR .
+        $filePath = $this->dataDirectory . implode('/', str_split($quadrantPath)) . DIRECTORY_SEPARATOR .
             self::GEO_FEATURE_FILENAME;
         $geoJson = json_decode(file_get_contents($filePath), true);
         return $geoJson;

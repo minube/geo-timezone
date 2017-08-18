@@ -7,7 +7,7 @@ use TimeZone\Geometry\Utils;
 
 class Indexer extends Tree
 {
-    const DEFAULT_DATA_SOURCE_PATH = __DIR__ . "/../../data/downloads/timezones/dist/timezones.json";
+    const DEFAULT_DATA_SOURCE_PATH = "/../../data/downloads/timezones/dist/timezones.json";
     const TARGET_INDEX_PERCENT = 0.91;
     const DEFAULT_ZONE_RESULT = -1;
     const LEVEL_DELIMITER_SYMBOL = ".";
@@ -50,7 +50,8 @@ class Indexer extends Tree
      */
     protected function readDataSource()
     {
-        $this->dataSourcePath = is_null($this->dataSourcePath) ? self::DEFAULT_DATA_SOURCE_PATH : $this->dataSourcePath;
+        $this->dataSourcePath = is_null($this->dataSourcePath) ? __DIR__ . self::DEFAULT_DATA_SOURCE_PATH :
+        $this->dataSourcePath;
         $jsonData = file_get_contents($this->dataSourcePath);
         $this->dataSource = json_decode($jsonData, true);
     }
@@ -227,7 +228,7 @@ class Indexer extends Tree
             if ($lastLevelFlag) {
                 $features = $this->getIntersectionFeatures($intersectionResult, $curQuadrant);
                 $featuresCollection = Utils::getFeatureCollection($features);
-                $featuresPath = Tree::DATA_DIRECTORY . str_replace('.', "/", $curQuadrant['id']) . "/";
+                $featuresPath = $this->dataDirectory . str_replace('.', "/", $curQuadrant['id']) . "/";
                 $this->writeGeoFeaturesToJson($featuresCollection, $featuresPath);
                 $zoneResult = 'f';
             } else {
@@ -310,9 +311,9 @@ class Indexer extends Tree
      */
     protected function createDirectoryTree($path)
     {
-        $directories = explode(Tree::DATA_DIRECTORY, $path)[1];
+        $directories = explode($this->dataDirectory, $path)[1];
         $directories = explode("/", $directories);
-        $currentDir = Tree::DATA_DIRECTORY;
+        $currentDir = $this->dataDirectory;
         foreach ($directories as $dir) {
             $currentDir = $currentDir . "/" . $dir;
             if (!is_dir($currentDir)) {
@@ -359,7 +360,7 @@ class Indexer extends Tree
     {
         $writtenBytes = false;
         $tree = $this->buildTree();
-        $path = realpath(Tree::DATA_DIRECTORY);
+        $path = realpath($this->dataDirectory);
         if ($path && is_writable($path)) {
             $full = $path . DIRECTORY_SEPARATOR . Tree::DATA_TREE_FILENAME;
             $writtenBytes = file_put_contents($full, json_encode($tree));
