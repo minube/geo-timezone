@@ -200,7 +200,7 @@ class UpdaterData
     {
         echo "Downloading data...\n";
         $this->downloadLastVersion();
-        echo "Unzip data...\n";
+        /*echo "Unzip data...\n";
         $this->unzipData(self::DOWNLOAD_DIR . self::TIMEZONE_FILE_NAME . ".zip");
         echo "Rename timezones json...\n";
         $this->renameTimezoneJson();
@@ -212,7 +212,7 @@ class UpdaterData
         echo "Remove downloaded data...\n";
         $this->removePreviousData(self::DOWNLOAD_DIR);
         echo "Zipping quadrant tree data...";
-        $this->zipDir(self::MAIN_DIR, self::MAIN_DIR . ".zip");
+        $this->zipDir(self::MAIN_DIR, self::MAIN_DIR . ".zip");*/
     }
 }
 

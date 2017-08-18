@@ -7,7 +7,7 @@ use TimeZone\Geometry\Utils;
 
 class Indexer extends Tree
 {
-    const DEFAULT_DATA_SOURCE_PATH = __DIR__ . "/../../../data/downloads/timezones/dist/timezones.json";
+    const DEFAULT_DATA_SOURCE_PATH = __DIR__ . "/../../data/downloads/timezones/dist/timezones.json";
     const TARGET_INDEX_PERCENT = 0.91;
     const DEFAULT_ZONE_RESULT = -1;
     const LEVEL_DELIMITER_SYMBOL = ".";
