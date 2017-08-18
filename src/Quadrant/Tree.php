@@ -8,7 +8,7 @@ use Geometry\Utils;
 class Tree extends Element
 {
     const DATA_TREE_FILENAME = "index.json";
-    const DATA_DIRECTORY = "../data/";
+    const DATA_DIRECTORY = __DIR__ . "/../../data/";
     const GEO_FEATURE_FILENAME = "geo.json";
     protected $dataTree = null;
 
