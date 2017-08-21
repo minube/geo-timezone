@@ -11,13 +11,14 @@
     }
   ],
   "require": {
-    "phayes/geoPHP": "1.2.*"
+    "phayes/geoPHP": "1.2.*",
+    "php": ">=5.4"
   },
   "autoload": {
     "psr-4": {
-      "Timezone\\Geometry\\": "src/Geometry",
-      "Timezone\\Quadrant\\": "src/Quadrant",
-      "TimeZone\\": "src/"
+      "GeoTimeZone\\Geometry\\": "src/GeoTimeZone/Geometry",
+      "GeoTimeZone\\Quadrant\\": "src/GeoTimeZone/Quadrant",
+      "GeoTimeZone\\": "src/GeoTimeZone/"
     }
   },
   "config": {

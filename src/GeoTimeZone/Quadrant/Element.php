@@ -1,6 +1,6 @@
 <?php
 
-namespace TimeZone\Quadrant;
+namespace GeoTimeZone\Quadrant;
 
 class Element
 {

@@ -1,8 +1,8 @@
 <?php
 
-namespace TimeZone;
+namespace GeoTimeZone;
 
-use TimeZone\Quadrant\Tree;
+use GeoTimeZone\Quadrant\Tree;
 use ErrorException;
 use DateTime;
 use DateTimeZone;

@@ -1,24 +1,27 @@
 <?php
 
-namespace TimeZone\Quadrant;
+namespace GeoTimeZone\Quadrant;
 
-use TimeZone\Geometry\Utils;
-
+use GeoTimeZone\Geometry\Utils;
+use ErrorException;
 
 class Tree extends Element
 {
     const DATA_TREE_FILENAME = "index.json";
-    const DATA_DIRECTORY = "/../../data/";
+    const DATA_DIRECTORY = "/../../../data/";
     const GEO_FEATURE_FILENAME = "geo.json";
     protected $dataTree = null;
     protected $dataDirectory;
+    protected $utils;
     
     /**
      * Tree constructor.
      */
     public function __construct()
     {
+        Element::__construct();
         $this->dataDirectory = __DIR__ . self::DATA_DIRECTORY;
+        $this->utils = new Utils();
     }
     
     /**
@@ -53,7 +56,7 @@ class Tree extends Element
     protected function evaluateFeatures($quadrantPath, $latitude, $longitude)
     {
         $features = $this->loadFeatures($quadrantPath);
-        $timeZone = Utils::isPointInQuadrantFeatures($features, $latitude, $longitude);
+        $timeZone = $this->utils->isPointInQuadrantFeatures($features, $latitude, $longitude);
         return $timeZone;
     }
 

@@ -1,8 +1,9 @@
 <?php
 
-namespace TimeZone;
+namespace GeoTimeZone;
 
-use TimeZone\Quadrant\Indexer as Indexer;
+use GeoTimeZone\Quadrant\Indexer as Indexer;
+use ZipArchive;
 
 class UpdaterData
 {
@@ -82,6 +83,7 @@ class UpdaterData
         $geoJsonUrl = $this->getGeoJsonUrl($response);
         if($geoJsonUrl != self::GEO_JSON_DEFAULT_URL)
         {
+            echo $this->downloadDir;
             if(!is_dir($this->downloadDir)) {
                 mkdir($this->downloadDir);
             }
@@ -96,13 +98,15 @@ class UpdaterData
      */
     protected function unzipData($filePath)
     {
-        $zip = new \ZipArchive;
+        $zip = new ZipArchive();
         $controlFlag = false;
         if ($zip->open($filePath) === TRUE) {
             $zipName = basename($filePath, ".zip");
+            echo $zipName;
             if(!is_dir($this->downloadDir . $zipName)) {
                 mkdir($this->downloadDir . $zipName);
             }
+            echo $this->downloadDir. $zipName;
             $zip->extractTo($this->downloadDir. $zipName);
             $zip->close();
             $controlFlag = true;
@@ -126,6 +130,7 @@ class UpdaterData
                 break;
             }
         }
+        echo dirname($jsonPath) . "/" . self::TIMEZONE_FILE_NAME . ".json";
         return rename($jsonPath, dirname($jsonPath) . "/" . self::TIMEZONE_FILE_NAME . ".json");
     }
     
@@ -197,7 +202,7 @@ class UpdaterData
         $parentPath = $pathInfo['dirname'];
         $dirName = $pathInfo['basename'];
         
-        $z = new \ZipArchive();
+        $z = new ZipArchive();
         $z->open($outZipPath, ZIPARCHIVE::CREATE);
         $z->addEmptyDir($dirName);
         $this->folderToZip($sourcePath, $z, strlen("$parentPath/"));
@@ -210,12 +215,12 @@ class UpdaterData
     public function updateData()
     {
         echo "Downloading data...\n";
-        $this->downloadLastVersion();
-        /*echo "Unzip data...\n";
-        $this->unzipData($this->downloadDir . self::TIMEZONE_FILE_NAME . ".zip");
+        //$this->downloadLastVersion();
+        echo "Unzip data...\n";
+        //$this->unzipData($this->downloadDir . self::TIMEZONE_FILE_NAME . ".zip");
         echo "Rename timezones json...\n";
         $this->renameTimezoneJson();
-        echo "Remove previous data...\n";
+        /*echo "Remove previous data...\n";
         $this->removePreviousData($this->mainDir . "/");
         echo "Creating quadrant tree data...\n";
         $geoIndexer = new Indexer();

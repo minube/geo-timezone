@@ -1,8 +1,9 @@
 <?php
 
-namespace TimeZone\Geometry;
+namespace GeoTimeZone\Geometry;
 
 use geoPHP;
+use Exception;
 
 class Utils
 {
@@ -41,7 +42,7 @@ class Utils
     /**
      * Create polygon geometry object from polygon points array
      * @param $polygonPoints
-     * @return bool|GeometryCollection|mixed
+     * @return bool|geoPHP::GeometryCollection|mixed
      */
     protected function createPolygonFromPoints($polygonPoints)
     {
@@ -52,7 +53,7 @@ class Utils
     /**
      * Create polygon geometry object from structured polygon data (as json)
      * @param $polygonJson
-     * @return bool|GeometryCollection|mixed
+     * @return bool|geoPHP::GeometryCollection|mixed
      */
     public function createPolygonFromJson($polygonJson)
     {
@@ -203,7 +204,7 @@ class Utils
      * Create a point geometry object from coordinates (latitude, longitude)
      * @param $latitude
      * @param $longitude
-     * @return bool|GeometryCollection|mixed
+     * @return bool|geoPHP::GeometryCollection|mixed
      */
     protected function createPoint($latitude, $longitude)
     {
