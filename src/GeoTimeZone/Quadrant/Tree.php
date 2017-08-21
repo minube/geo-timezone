@@ -2,8 +2,8 @@
 
 namespace GeoTimeZone\Quadrant;
 
-use GeoTimeZone\Geometry\Utils;
 use ErrorException;
+use GeoTimeZone\Geometry\Utils;
 
 class Tree extends Element
 {
@@ -32,7 +32,7 @@ class Tree extends Element
         $jsonData = file_get_contents($this->dataDirectory . self::DATA_TREE_FILENAME);
         $this->dataTree = json_decode($jsonData, true);
     }
-
+    
     /**
      * Load json features data from a particular geo quadrant path
      * @param $quadrantPath
@@ -45,7 +45,7 @@ class Tree extends Element
         $geoJson = json_decode(file_get_contents($filePath), true);
         return $geoJson;
     }
-
+    
     /**
      * Check if a particular location (latitude, longitude)is IN a particular quadrant
      * @param $quadrantPath
@@ -59,7 +59,7 @@ class Tree extends Element
         $timeZone = $this->utils->isPointInQuadrantFeatures($features, $latitude, $longitude);
         return $timeZone;
     }
-
+    
     /**
      * Get valid timezone
      * @param $zoneData
@@ -81,7 +81,7 @@ class Tree extends Element
         }
         return $validTimezone;
     }
-
+    
     /**
      * Check if timezone is valid
      * @param $timeZone
@@ -91,7 +91,7 @@ class Tree extends Element
     {
         return $timeZone == null || $timeZone != "none";
     }
-
+    
     /**
      * Main function for looking the timezone associated to a particular location (latitude, longitude)
      * @param $latitude
@@ -104,7 +104,7 @@ class Tree extends Element
         $timeZone = "none";
         $quadrantPath = '';
         $quadrantTree = $this->dataTree['lookup'];
-
+        
         while (!$this->isValidTimeZone($timeZone)) {
             $geoQuadrant->moveToNextQuadrant($latitude, $longitude);
             $quadrantTree = $quadrantTree[$geoQuadrant->getLevel()];

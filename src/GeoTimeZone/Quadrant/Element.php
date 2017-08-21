@@ -12,7 +12,7 @@ class Element
     const LEVEL_B = 'b';
     const LEVEL_C = 'c';
     const LEVEL_D = 'd';
-
+    
     protected $top;
     protected $bottom;
     protected $left;
@@ -20,7 +20,7 @@ class Element
     protected $midLat;
     protected $midLon;
     protected $level;
-
+    
     /**
      * Element constructor.
      */
@@ -34,7 +34,7 @@ class Element
         $this->midLon = 0.0;
         $this->level = self::LEVEL_A;
     }
-
+    
     /**
      * Move the current quadrant to a particular location (latitude, longitude)
      * @param $latitude
@@ -61,7 +61,7 @@ class Element
             $this->left = $this->midLon;
         }
     }
-
+    
     /**
      * Update the mid coordinates attributes of the quadrant
      */
@@ -70,7 +70,7 @@ class Element
         $this->midLat = ($this->top + $this->bottom) / 2.0;
         $this->midLon = ($this->left + $this->right) / 2.0;
     }
-
+    
     /**
      * Get the quadrant level (a, b, c or d)
      * @return string

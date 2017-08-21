@@ -2,15 +2,15 @@
 
 namespace GeoTimeZone;
 
-use GeoTimeZone\Quadrant\Tree;
-use ErrorException;
 use DateTime;
 use DateTimeZone;
+use ErrorException;
+use GeoTimeZone\Quadrant\Tree;
 
 class Calculator
 {
     protected $quadrantTree;
-
+    
     /**
      * TimeZone constructor.
      */
@@ -19,7 +19,7 @@ class Calculator
         $this->quadrantTree = new Tree();
         $this->quadrantTree->initializeDataTree();
     }
-
+    
     /**
      * Adjust the latitude value
      * @param $latitude
@@ -37,7 +37,7 @@ class Calculator
         }
         return $newLatitude;
     }
-
+    
     /**
      * Adjust longitude value
      * @param $longitude
@@ -55,7 +55,7 @@ class Calculator
         }
         return $newLongitude;
     }
-
+    
     /**
      * Get timezone name from a particular location (latitude, longitude)
      * @param $latitude
@@ -69,7 +69,7 @@ class Calculator
         $timeZone = $this->quadrantTree->lookForTimezone($latitude, $longitude);
         return $timeZone;
     }
-
+    
     /**
      * Get the local date belonging to a particular latitude, longitude and timestamp
      * @param $latitude
@@ -87,7 +87,7 @@ class Calculator
         }
         return $date;
     }
-
+    
     /**
      * Get timestamp from latitude, longitude and localTimestamp
      * @param $latitude

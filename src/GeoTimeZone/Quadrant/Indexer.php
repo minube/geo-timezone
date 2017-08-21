@@ -10,14 +10,14 @@ class Indexer extends Tree
     const DEFAULT_ZONE_RESULT = -1;
     const LEVEL_DELIMITER_SYMBOL = ".";
     const TOTAL_LEVELS = 4;
-
+    
     protected $dataSourcePath;
     protected $dataSource;
     protected $timezones = array();
     protected $lookup = array();
     protected $currentQuadrants = array();
     
-
+    
     /**
      * Initialize the current quadrants attribute for the first indexing iteration
      */
@@ -42,18 +42,18 @@ class Indexer extends Tree
             )
         );
     }
-
+    
     /**
      * Read the new timezones json to be indexed
      */
     protected function readDataSource()
     {
         $this->dataSourcePath = is_null($this->dataSourcePath) ? __DIR__ . self::DEFAULT_DATA_SOURCE_PATH :
-        $this->dataSourcePath;
+            $this->dataSourcePath;
         $jsonData = file_get_contents($this->dataSourcePath);
         $this->dataSource = json_decode($jsonData, true);
     }
-
+    
     /**
      * Save timezones values from the reference file (timezones json) to timezones array attribute
      */
@@ -63,7 +63,7 @@ class Indexer extends Tree
             $this->timezones[] = $feature['properties']['tzid'];
         }
     }
-
+    
     /**
      * Find the timezones that intersect with or are within the quadrant polygon
      * @param $timezonesToInspect
@@ -87,13 +87,13 @@ class Indexer extends Tree
                 }
             }
         }
-
+        
         return array(
             'foundExactMatch' => $foundExactMatch,
             'intersectedZones' => $intersectedZones
         );
     }
-
+    
     /**
      * Create new level of quadrants from the previous bounds, the intersected found timezones and the previous zone ID
      * @param $zoneId
@@ -113,7 +113,7 @@ class Indexer extends Tree
                 $quadrantBounds[3]
             ]
         );
-
+        
         $topLeft = array(
             'id' => $zoneId . '.b',
             'timezones' => $intersectedZones,
@@ -124,7 +124,7 @@ class Indexer extends Tree
                 $quadrantBounds[3]
             ]
         );
-
+        
         $bottomLeft = array(
             'id' => $zoneId . '.c',
             'timezones' => $intersectedZones,
@@ -135,7 +135,7 @@ class Indexer extends Tree
                 (float)($quadrantBounds[1] + $quadrantBounds[3]) / 2.0
             ]
         );
-
+        
         $bottomRight = array(
             'id' => $zoneId . '.d',
             'timezones' => $intersectedZones,
@@ -146,10 +146,10 @@ class Indexer extends Tree
                 (float)($quadrantBounds[1] + $quadrantBounds[3]) / 2.0
             ]
         );
-
+        
         return array($topRight, $topLeft, $bottomLeft, $bottomRight);
     }
-
+    
     /**
      * Select timezones to find the intersections
      * @param $previousTimezone
@@ -167,7 +167,7 @@ class Indexer extends Tree
         }
         return $timezonesToInspect;
     }
-
+    
     /**
      * Update the lookup table
      * @param $zoneResult
@@ -176,14 +176,14 @@ class Indexer extends Tree
     protected function updateLookup($zoneResult, $curQuadrantId)
     {
         $levelPath = explode(self::LEVEL_DELIMITER_SYMBOL, $curQuadrantId);
-
+        
         if ($zoneResult !== self::DEFAULT_ZONE_RESULT) {
             $this->addLevelToLookup($zoneResult, $levelPath);
         } else {
             $this->removeLevelFromLookup($levelPath);
         }
     }
-
+    
     /**
      * Get intersection features from current quadrant and each intersected timezone areas
      * @param $intersectionResult
@@ -208,7 +208,7 @@ class Indexer extends Tree
         }
         return $features;
     }
-
+    
     /**
      * Find the associated zones to the current quadrants and the next quadrants to be evaluated
      * @param $intersectionResult
@@ -248,7 +248,7 @@ class Indexer extends Tree
             'nextQuadrants' => $nextQuadrants
         );
     }
-
+    
     /**
      * Check if the current indexing iteration should be carry on or not
      * @param $curLevel
@@ -263,7 +263,7 @@ class Indexer extends Tree
         echo " Indexing percentage: " . $curPctIndexed . "\n";
         return $curPctIndexed < self::TARGET_INDEX_PERCENT;
     }
-
+    
     /**
      * Index current quadrants and get the new ones
      * @param $lastLevelFlag
@@ -280,7 +280,7 @@ class Indexer extends Tree
         }
         return $nextQuadrants;
     }
-
+    
     /**
      * Main function that run all index processing
      */
@@ -290,7 +290,7 @@ class Indexer extends Tree
         $curLevel = 1;
         $numQuadrants = 16;
         $lastLevel = 0;
-
+        
         while ($this->validIndexingPercentage($curLevel, $numQuadrants)) {
             $curLevel += 1;
             $this->currentQuadrants = $this->indexQuadrants($lastLevel);
@@ -302,7 +302,7 @@ class Indexer extends Tree
         echo "Writing quadrant tree json...\n";
         $this->writeQuadrantTreeJson();
     }
-
+    
     /**
      * Create the directory tree
      * @param $path
@@ -319,7 +319,7 @@ class Indexer extends Tree
             }
         }
     }
-
+    
     /**
      * Create json file from timezone features
      * @param $features
@@ -336,7 +336,7 @@ class Indexer extends Tree
         }
         return $writtenBytes;
     }
-
+    
     /**
      * Build tree array to be save in a json file later
      * @return array
@@ -349,7 +349,7 @@ class Indexer extends Tree
         );
         return $tree;
     }
-
+    
     /**
      * Write the quadrant tree in a json file
      * @return bool|int
@@ -365,7 +365,7 @@ class Indexer extends Tree
         }
         return $writtenBytes;
     }
-
+    
     /**
      * Set the input data source
      * @param $path
@@ -374,7 +374,7 @@ class Indexer extends Tree
     {
         $this->dataSourcePath = $path;
     }
-
+    
     /**
      * Main public function that starts all processing
      */
@@ -387,7 +387,7 @@ class Indexer extends Tree
         echo "Generating indexes...\n";
         $this->generateIndexes();
     }
-
+    
     /**
      * Find the intersected timezones and the next quadrant to be evaluated
      * @param $lastLevelFlag
@@ -406,7 +406,7 @@ class Indexer extends Tree
             $lastLevelFlag);
         return $zonesAndNextQuadrants;
     }
-
+    
     /**
      * Add level to the lookup table where the quadrant tree is being defined
      * @param $zoneResult
@@ -421,7 +421,7 @@ class Indexer extends Tree
         }
         $level = $zoneResult;
     }
-
+    
     /**
      * Remove level from the lookup table where the quadrant tree is being defined
      * @param $levelPath

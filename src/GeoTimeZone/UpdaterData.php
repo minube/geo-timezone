@@ -51,7 +51,7 @@ class UpdaterData
      * @param $url
      * @param string $destinationPath
      */
-    protected function getZipResponse($url, $destinationPath="none")
+    protected function getZipResponse($url, $destinationPath = "none")
     {
         exec("wget {$url} --output-document={$destinationPath}");
     }
@@ -65,8 +65,8 @@ class UpdaterData
     {
         $jsonResp = json_decode($data, true);
         $geoJsonUrl = self::GEO_JSON_DEFAULT_URL;
-        foreach($jsonResp['assets'] as $asset) {
-            if(strpos($asset['name'], self::GEO_JSON_DEFAULT_NAME)) {
+        foreach ($jsonResp['assets'] as $asset) {
+            if (strpos($asset['name'], self::GEO_JSON_DEFAULT_NAME)) {
                 $geoJsonUrl = $asset['browser_download_url'];
                 break;
             }
@@ -81,10 +81,9 @@ class UpdaterData
     {
         $response = $this->getResponse(self::REPO_HOST . self::REPO_PATH);
         $geoJsonUrl = $this->getGeoJsonUrl($response);
-        if($geoJsonUrl != self::GEO_JSON_DEFAULT_URL)
-        {
+        if ($geoJsonUrl != self::GEO_JSON_DEFAULT_URL) {
             echo $this->downloadDir;
-            if(!is_dir($this->downloadDir)) {
+            if (!is_dir($this->downloadDir)) {
                 mkdir($this->downloadDir);
             }
             $this->getZipResponse($geoJsonUrl, $this->downloadDir . self::TIMEZONE_FILE_NAME . ".zip");
@@ -103,11 +102,11 @@ class UpdaterData
         if ($zip->open($filePath) === TRUE) {
             $zipName = basename($filePath, ".zip");
             echo $zipName;
-            if(!is_dir($this->downloadDir . $zipName)) {
+            if (!is_dir($this->downloadDir . $zipName)) {
                 mkdir($this->downloadDir . $zipName);
             }
-            echo $this->downloadDir. $zipName;
-            $zip->extractTo($this->downloadDir. $zipName);
+            echo $this->downloadDir . $zipName;
+            $zip->extractTo($this->downloadDir . $zipName);
             $zip->close();
             $controlFlag = true;
             unlink($filePath);
@@ -121,11 +120,11 @@ class UpdaterData
      */
     protected function renameTimezoneJson()
     {
-        $path = realpath($this->downloadDir. self::TIMEZONE_FILE_NAME . "/");
+        $path = realpath($this->downloadDir . self::TIMEZONE_FILE_NAME . "/");
         $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path));
         $jsonPath = "";
-        foreach($files as $pathFile => $file){
-            if(strpos($pathFile, ".json")) {
+        foreach ($files as $pathFile => $file) {
+            if (strpos($pathFile, ".json")) {
                 $jsonPath = $pathFile;
                 break;
             }
@@ -135,36 +134,57 @@ class UpdaterData
     }
     
     /**
-     * Remove all directories tree in main data folder
+     * Remove all directories tree in a particular data folder
      * @param $path
+     * @param $validDir
      */
-    protected function removePreviousData($path)
+    protected function removeData($path, $validDir = null)
     {
-        $validDir = array(
-            Indexer::LEVEL_A,
-            Indexer::LEVEL_B,
-            Indexer::LEVEL_C,
-            Indexer::LEVEL_D
-        );
+        $removeAll = !$validDir ? true : false;
+        
         if (is_dir($path)) {
             $objects = scandir($path);
             foreach ($objects as $object) {
                 $objectPath = $path . "/" . $object;
                 if ($object != "." && $object != "..") {
                     if (is_dir($objectPath)) {
-                        if(in_array(basename($object), $validDir)) {
-                            $this->removePreviousData($objectPath);
+                        if (in_array(basename($object), $validDir) || $removeAll) {
+                            $this->removeData($objectPath, $validDir);
                         }
                     } else {
                         unlink($objectPath);
                     }
                 }
             }
-            if (in_array(basename($path), $validDir)) {
+            if (in_array(basename($path), $validDir) || $removeAll) {
                 rmdir($path);
             }
         }
         return;
+    }
+    
+    /**
+     * Remove data tree
+     */
+    protected function removeDataTree()
+    {
+        $validDir = [
+            Indexer::LEVEL_A,
+            Indexer::LEVEL_B,
+            Indexer::LEVEL_C,
+            Indexer::LEVEL_D
+        ];
+        $this->removeData($this->mainDir . "/", $validDir);
+    }
+    
+    
+    /**
+     * Remove downloaded data
+     */
+    protected function removeDownloadedData()
+    {
+        $validDir = array("downloads", "timezones", "dist");
+        $this->removeData($this->downloadDir, $validDir);
     }
     
     /**
@@ -215,20 +235,20 @@ class UpdaterData
     public function updateData()
     {
         echo "Downloading data...\n";
-        //$this->downloadLastVersion();
+        $this->downloadLastVersion();
         echo "Unzip data...\n";
-        //$this->unzipData($this->downloadDir . self::TIMEZONE_FILE_NAME . ".zip");
+        $this->unzipData($this->downloadDir . self::TIMEZONE_FILE_NAME . ".zip");
         echo "Rename timezones json...\n";
         $this->renameTimezoneJson();
-        /*echo "Remove previous data...\n";
-        $this->removePreviousData($this->mainDir . "/");
+        echo "Remove previous data...\n";
+        $this->removeDataTree();
         echo "Creating quadrant tree data...\n";
         $geoIndexer = new Indexer();
         $geoIndexer->createQuadrantTreeData();
         echo "Remove downloaded data...\n";
-        $this->removePreviousData($this->downloadDir);
+        $this->removeDownloadedData();
         echo "Zipping quadrant tree data...";
-        $this->zipDir($this->mainDir, $this->mainDir . ".zip");*/
+        $this->zipDir($this->mainDir, $this->mainDir . ".zip");
     }
 }
 
