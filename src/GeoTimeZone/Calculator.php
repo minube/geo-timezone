@@ -24,7 +24,7 @@ class Calculator
      * Adjust the latitude value
      * @param $latitude
      * @return float|int
-     * @throws \ErrorException
+     * @throws ErrorException
      */
     protected function adjustLatitude($latitude)
     {
@@ -42,13 +42,13 @@ class Calculator
      * Adjust longitude value
      * @param $longitude
      * @return float|int
-     * @throws \ErrorException
+     * @throws ErrorException
      */
     protected function adjustLongitude($longitude)
     {
         $newLongitude = $longitude;
         if (null == $longitude || abs($longitude) > Tree::MAX_ABS_LONGITUDE) {
-            throw new ErrorException('Invalid latitude: ' . $longitude);
+            throw new ErrorException('Invalid longitude: ' . $longitude);
         }
         if (abs($longitude) == Tree::MAX_ABS_LONGITUDE) {
             $newLongitude = ($longitude / Tree::MAX_ABS_LONGITUDE) * Tree::ABS_LONGITUDE_LIMIT;
@@ -60,7 +60,7 @@ class Calculator
      * Get timezone name from a particular location (latitude, longitude)
      * @param $latitude
      * @param $longitude
-     * @return null|string
+     * @return string
      */
     public function getTimeZoneName($latitude, $longitude)
     {
