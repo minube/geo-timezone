@@ -227,7 +227,7 @@ class Utils
      */
     public function isPointInQuadrantFeatures($features, $latitude, $longitude)
     {
-        $timeZone = null;
+        $timeZone = "notFound";
         $point = $this->createPoint($latitude, $longitude);
         if ($point != null) {
             foreach ($features['features'][0] as $feature) {

@@ -165,6 +165,17 @@ class CalculatorTest extends AbstractUnitTestCase
     }
     
     /**
+     * @dataProvider getDataMaxLongitude
+     * @param $latitude
+     * @param $longitude
+     */
+    public function testGetTimeZoneNameWithMaxLongitude($latitude, $longitude)
+    {
+        $timeZone = $this->calculator->getTimeZoneName($latitude, $longitude);
+        $this->assertTrue(is_string($timeZone));
+    }
+    
+    /**
      * @dataProvider getDataMaxLatitude
      * @param $latitude
      * @param $longitude
@@ -183,7 +194,7 @@ class CalculatorTest extends AbstractUnitTestCase
      * @param $longitude
      * @param $adjustedLongitude
      */
-    public function testAdjustLongitudeWithMaxLongitude($latitude, $longitude, $adjustedLongitude)
+    public function testAdjustMaxLongitudeWithMaxLongitude($latitude, $longitude, $adjustedLongitude)
     {
         $method = $this->getPrivateMethod(get_class($this->calculator), 'adjustLongitude');
         $longitudeToTest = $method->invokeArgs($this->calculator, array($longitude));

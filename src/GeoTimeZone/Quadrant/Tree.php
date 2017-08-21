@@ -107,11 +107,15 @@ class Tree extends Element
         
         while (!$this->isValidTimeZone($timeZone)) {
             $geoQuadrant->moveToNextQuadrant($latitude, $longitude);
-            $quadrantTree = $quadrantTree[$geoQuadrant->getLevel()];
+            if (!isset($quadrantTree[$geoQuadrant->getLevel()])) {
+                break;
+            }
+            $quadrantTree =  $quadrantTree[$geoQuadrant->getLevel()];
             $quadrantPath = $quadrantPath . $geoQuadrant->getLevel();
             $timeZone = $this->evaluateQuadrantData($quadrantTree, $quadrantPath, $latitude, $longitude);
             $geoQuadrant->updateMidCoordinates();
         }
+        
         return $timeZone;
     }
 }
