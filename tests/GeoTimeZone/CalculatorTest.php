@@ -3,9 +3,9 @@
 namespace Tests\GeoTimeZone;
 
 use GeoTimeZone\Calculator;
-use PHPUnit\Framework\TestCase;
+use Tests\AbstractUnitTestCase;
 
-class CalculatorTest extends TestCase
+class CalculatorTest extends AbstractUnitTestCase
 {
     protected $calculator;
     
@@ -102,11 +102,13 @@ class CalculatorTest extends TestCase
         return array(
             'Testing Positive Max Latitude' => array(
                 'latitude' => 90.0,
-                'longitude' => -8.612150
+                'longitude' => -8.612150,
+                'adjustedLatitude' => 89.9999
             ),
             'Testing Negative Max Latitude' => array(
                 'latitude' => -90.0,
-                'longitude' => -8.612150
+                'longitude' => -8.612150,
+                'adjustedLatitude' => -89.9999
             )
         );
     }
@@ -116,11 +118,13 @@ class CalculatorTest extends TestCase
         return array(
             'Testing Positive Max Longitude' => array(
                 'latitude' => -8.612150,
-                'longitude' => 180.0
+                'longitude' => 180.0,
+                'adjustedLongitude' => 179.9999
             ),
             'Testing Negative Max Longitude' => array(
                 'latitude' => -8.612150,
-                'longitude' => -180.0
+                'longitude' => -180.0,
+                'adjustedLongitude' => -179.9999
             )
         );
     }
@@ -149,16 +153,42 @@ class CalculatorTest extends TestCase
         $this->assertEquals($timeZone, "none");
     }
 
-//    /**
-//     * @dataProvider getDataMaxLatitude
-//     * @param $latitude
-//     * @param $longitude
-//     */
-//    public function testGetTimeZoneNameWithMaxLatitude($latitude, $longitude)
-//    {
-//        $timeZone = $this->calculator->getTimeZoneName($latitude, $longitude);
-//        $this->assertTrue(is_string($timeZone));
-//    }
+    /**
+     * @dataProvider getDataMaxLatitude
+     * @param $latitude
+     * @param $longitude
+     */
+    public function testGetTimeZoneNameWithMaxLatitude($latitude, $longitude)
+    {
+        $timeZone = $this->calculator->getTimeZoneName($latitude, $longitude);
+        $this->assertTrue(is_string($timeZone));
+    }
+    
+    /**
+     * @dataProvider getDataMaxLatitude
+     * @param $latitude
+     * @param $longitude
+     * @param $adjustedLatitude
+     */
+    public function testAdjustLatitudeWithMaxLatitude($latitude, $longitude, $adjustedLatitude)
+    {
+        $method = $this->getPrivateMethod(get_class($this->calculator), 'adjustLatitude');
+        $latitudeToTest = $method->invokeArgs($this->calculator, array($latitude));
+        $this->assertEquals($adjustedLatitude, $latitudeToTest);
+    }
+    
+    /**
+     * @dataProvider getDataMaxLongitude
+     * @param $latitude
+     * @param $longitude
+     * @param $adjustedLongitude
+     */
+    public function testAdjustLongitudeWithMaxLongitude($latitude, $longitude, $adjustedLongitude)
+    {
+        $method = $this->getPrivateMethod(get_class($this->calculator), 'adjustLongitude');
+        $longitudeToTest = $method->invokeArgs($this->calculator, array($longitude));
+        $this->assertEquals($adjustedLongitude, $longitudeToTest);
+    }
     
     /**
      * @dataProvider getDataLocalDate
@@ -166,6 +196,7 @@ class CalculatorTest extends TestCase
      * @param $longitude
      * @param $timestamp
      * @param $expectedTimeZone
+     * @param $expectedOffset
      */
     public function testGetLocalDate($latitude, $longitude, $timestamp, $expectedTimeZone, $expectedOffset)
     {
