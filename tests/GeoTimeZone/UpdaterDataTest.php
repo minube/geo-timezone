@@ -1,21 +1,18 @@
 <?php
-namespace Tests\GeoTimeZone;
+
+namespace Tests;
+
+include __DIR__ . "/../../vendor/autoload.php";
 
 use GeoTimeZone\UpdaterData;
-use Tests\AbstractUnitTestCase;
 
-class UpdaterDataTest extends AbstractUnitTestCase
+class UpdaterDataTest
 {
-    protected $updater;
-    
-    protected function setUp()
+    public function main()
     {
-        $this->updater = new UpdaterData();
-    }
-    
-    public function testDownloadLastVersion()
-    {
-        $method = $this->getPrivateMethod(get_class($this->updater), 'downloadLastVersion');
-        $method->invokeArgs($this->updater, array());
+        $updater = new UpdaterData();
+        $updater->updateData();
     }
 }
+$test = new UpdaterDataTest();
+$test->main();
