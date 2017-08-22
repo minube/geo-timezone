@@ -2,8 +2,9 @@
 
 namespace GeoTimeZone\Geometry;
 
-use geoPHP;
 use Exception;
+use geoPHP;
+
 
 class Utils
 {
@@ -29,8 +30,7 @@ class Utils
     {
         $structuredCoordinates = array();
         foreach ($polygonPoints as $points) {
-            if(count($points) == 2)
-            {
+            if (count($points) == 2) {
                 $structuredCoordinates[] = $polygonPoints;
                 break;
             }
@@ -198,6 +198,36 @@ class Utils
     protected function isOnPolygonBoundaries($point, $polygon)
     {
         return $polygon->pointOnVertex($point);
+    }
+    
+    /**
+     * Check if the polygonA intersects with polygonB
+     * @param $polygonJsonA
+     * @param $polygonBoundsB
+     * @return mixed
+     * @internal param $polygonA
+     * @internal param $polygonB
+     */
+    public function intersectsPolygons($polygonJsonA, $polygonBoundsB)
+    {
+        $polygonA = $this->createPolygonFromJson(json_encode($polygonJsonA));
+        $polygonB = $this->getQuadrantPolygon($polygonBoundsB);
+        return $polygonA->intersects($polygonB);
+    }
+    
+    /**
+     * Check if the polygonA is within polygonB
+     * @param $polygonBoundsOrigin
+     * @param $polygonJsonDest
+     * @return mixed
+     * @internal param $polygonA
+     * @internal param $polygonB
+     */
+    public function withinPolygon($polygonBoundsOrigin, $polygonJsonDest)
+    {
+        $polygonDest = $this->createPolygonFromJson(json_encode($polygonJsonDest));
+        $polygonOrig = $this->getQuadrantPolygon($polygonBoundsOrigin);
+        return $polygonOrig->within($polygonDest);
     }
     
     /**
