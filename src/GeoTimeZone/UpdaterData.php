@@ -2,8 +2,10 @@
 
 namespace GeoTimeZone;
 
-use GeoTimeZone\Quadrant\Indexer as Indexer;
 use ZipArchive;
+use GuzzleHttp\Client;
+use GeoTimeZone\Quadrant\Indexer as Indexer;
+
 
 class UpdaterData
 {
@@ -35,15 +37,9 @@ class UpdaterData
      */
     protected function getResponse($url)
     {
-        $curl = curl_init();
-        curl_setopt_array($curl, array(
-            CURLOPT_RETURNTRANSFER => 1,
-            CURLOPT_URL => $url,
-            CURLOPT_USERAGENT => self::REPO_USER
-        ));
-        $response = curl_exec($curl);
-        curl_close($curl);
-        return $response;
+        $client = new Client();
+        $response = $client->request('GET', $url);
+        return $response->getBody()->getContents();
     }
     
     /**
@@ -82,7 +78,9 @@ class UpdaterData
         $response = $this->getResponse(self::REPO_HOST . self::REPO_PATH);
         $geoJsonUrl = $this->getGeoJsonUrl($response);
         if ($geoJsonUrl != self::GEO_JSON_DEFAULT_URL) {
-            echo $this->downloadDir;
+            if (!is_dir($this->mainDir)) {
+                mkdir($this->mainDir);
+            }
             if (!is_dir($this->downloadDir)) {
                 mkdir($this->downloadDir);
             }
@@ -235,18 +233,18 @@ class UpdaterData
     public function updateData()
     {
         echo "Downloading data...\n";
-        $this->downloadLastVersion();
+        //$this->downloadLastVersion();
         echo "Unzip data...\n";
-        $this->unzipData($this->downloadDir . self::TIMEZONE_FILE_NAME . ".zip");
+        //$this->unzipData($this->downloadDir . self::TIMEZONE_FILE_NAME . ".zip");
         echo "Rename timezones json...\n";
-        $this->renameTimezoneJson();
+        //$this->renameTimezoneJson();
         echo "Remove previous data...\n";
-        $this->removeDataTree();
+        //$this->removeDataTree();
         echo "Creating quadrant tree data...\n";
         $geoIndexer = new Indexer();
         $geoIndexer->createQuadrantTreeData();
         echo "Remove downloaded data...\n";
-        $this->removeDownloadedData();
+        //$this->removeDownloadedData();
         echo "Zipping quadrant tree data...";
         $this->zipDir($this->mainDir, $this->mainDir . ".zip");
     }
