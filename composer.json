@@ -5,14 +5,18 @@
       "url": "https://github.com/phayes/geoPHP",
       "autoload": {
         "files": [
-          "phayes/geophp/geoPHP.inc"
+          "vendor/phayes/geophp/geoPHP.inc"
         ]
       }
     }
   ],
   "require": {
     "phayes/geoPHP": "1.2.*",
-    "php": ">=5.4",
+    "php": ">=7.0",
+    "ext-dom": ">=7.0",
+    "ext-mbstring": ">=7.0",
+    "ext-zip": "*",
+    "ext-xml":">=7.0",
     "phpunit/phpunit": "6.3.0",
     "guzzlehttp/guzzle": "6.3.0"
   },

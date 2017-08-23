@@ -197,7 +197,7 @@ class Indexer extends Tree
                 $this->utils->adaptQuadrantBoundsToPolygon($curQuadrant['bounds'])
             );
             $intersectedArea = $this->utils->intersection(
-                $this->dataSource['features'][$tzIdx]['geometry'],
+                json_encode($this->dataSource['features'][$tzIdx]['geometry']),
                 $quadrantBoundsGeoJson);
             if ($intersectedArea) {
                 $intersectedArea['properties']['tzid'] = $this->timezones[$tzIdx];
@@ -395,9 +395,8 @@ class Indexer extends Tree
     protected function findTimezonesAndNextQuadrants($lastLevelFlag, $curQuadrant)
     {
         $quadrantBounds = $curQuadrant['bounds'];
-        //$quadrantPolygon = $this->utils->getQuadrantPolygon($quadrantBounds);
         $timezonesToInspect = $this->selectTimeZonesToInspect($curQuadrant);
-        $intersectionResult = $this->whichTimeZonesIntersect($timezonesToInspect, $quadrantBounds); //$quadrantPolygon);
+        $intersectionResult = $this->whichTimeZonesIntersect($timezonesToInspect, $quadrantBounds);
         $zonesAndNextQuadrants = $this->getAssociatedZonesAndNextQuadrants(
             $intersectionResult,
             $curQuadrant,
