@@ -1,4 +1,4 @@
-# Geo Timezone
+# Geo-Timezone Library
 Calculate timezone associated to a particular location based on coordinates (latitude, longitude) and timestamp
 reference.
 Therefore, this library provides the local date of a particular location in any moment too.
