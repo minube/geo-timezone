@@ -5,7 +5,6 @@ namespace GeoTimeZone\Geometry;
 use Exception;
 use geoPHP;
 
-
 class Utils
 {
     const POLYGON_GEOJSON_NAME = "Polygon";
