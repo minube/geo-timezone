@@ -5,7 +5,6 @@ namespace GeoTimeZone\Geometry;
 use Exception;
 use geoPHP;
 
-
 class Utils
 {
     /**
