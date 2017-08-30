@@ -176,16 +176,7 @@ class Utils
             $numPoints = count($polygonPoints);
             $pointIdxBack = $numPoints - 1;
             for ($pointIdx = 0; $pointIdx < $numPoints; $pointIdx++) {
-                if (
-                    ($polygonPoints[$pointIdx]->y() > $point->y()) != ($polygonPoints[$pointIdxBack]->y() > $point->y()) &&
-                    (
-                        $point->x() <
-                        ($polygonPoints[$pointIdxBack]->x() - $polygonPoints[$pointIdx]->x()) *
-                        ($point->y() - $polygonPoints[$pointIdx]->y())
-                        / ($polygonPoints[$pointIdxBack]->y() - $polygonPoints[$pointIdx]->y()) +
-                        $polygonPoints[$pointIdx]->x()
-                    )
-                ) {
+                if ($this->isInside($point, $polygonPoints[$pointIdx], $polygonPoints[$pointIdxBack])) {
                     $isInside = true;
                     break;
                 }
@@ -282,5 +273,22 @@ class Utils
             }
         }
         return $timeZone;
+    }
+    
+    /**
+     * Check if the point is between two points from the polygon
+     * @param $point
+     * @param $currentPolygonPoint
+     * @param $backPolygonPoint
+     * @return bool
+     */
+    protected function isInside($point, $currentPolygonPoint, $backPolygonPoint)
+    {
+        return ($currentPolygonPoint->y() > $point->y()) != ($backPolygonPoint->y() > $point->y()) &&
+            (
+                $point->x() < ($backPolygonPoint->x() - $currentPolygonPoint->x()) *
+                ($point->y() - $currentPolygonPoint->y()) / ($backPolygonPoint->y() - $currentPolygonPoint->y()) +
+                $currentPolygonPoint->x()
+            );
     }
 }
