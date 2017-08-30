@@ -10,8 +10,13 @@ class UpdaterDataTest
 {
     public function main()
     {
-        $updater = new UpdaterData();
-        $updater->updateData();
+        try{
+            $updater = new UpdaterData("/media/ana/Datos/geo-timezone/data/");
+            $updater->updateData();
+        }catch (\ErrorException $error){
+            echo $error->getMessage();
+        }
+        
     }
 }
 $test = new UpdaterDataTest();

@@ -17,11 +17,15 @@ class Tree extends Element
      * Tree constructor.
      * @param $dataDirectory
      */
-    public function __construct($dataDirectory)
+    public function __construct($dataDirectory=null)
     {
-        Element::__construct();
-        $this->dataDirectory = $dataDirectory;
-        $this->utils = new Utils();
+        if (isset($dataDirectory) && is_dir($dataDirectory)) {
+            Element::__construct();
+            $this->dataDirectory = $dataDirectory;
+            $this->utils = new Utils();
+        }else{
+            new ErrorException('Invalid data directory: ' . $dataDirectory);
+        }
     }
     
     /**

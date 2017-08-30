@@ -2,21 +2,27 @@
 
 namespace GeoTimeZone\Quadrant;
 
+use ErrorException;
 
 class Indexer extends Tree
 {
-    const DEFAULT_DATA_SOURCE_PATH = "/../../../data/downloads/timezones/dist/timezones.json";
     const TARGET_INDEX_PERCENT = 0.91;
     const DEFAULT_ZONE_RESULT = -1;
     const LEVEL_DELIMITER_SYMBOL = ".";
     const TOTAL_LEVELS = 4;
     
-    protected $dataSourcePath;
+    protected $dataSourcePath = null;
     protected $dataSource;
     protected $timezones = array();
     protected $lookup = array();
     protected $currentQuadrants = array();
     
+    
+    public function __construct($dataDirectory = null, $dataSourcePath = null)
+    {
+        parent::__construct($dataDirectory);
+        $this->setGeoDataSource($dataSourcePath);
+    }
     
     /**
      * Initialize the current quadrants attribute for the first indexing iteration
@@ -48,10 +54,12 @@ class Indexer extends Tree
      */
     protected function readDataSource()
     {
-        $this->dataSourcePath = is_null($this->dataSourcePath) ? __DIR__ . self::DEFAULT_DATA_SOURCE_PATH :
-            $this->dataSourcePath;
-        $jsonData = file_get_contents($this->dataSourcePath);
-        $this->dataSource = json_decode($jsonData, true);
+        if (isset($this->dataSourcePath) && is_file($this->dataSourcePath)) {
+            $jsonData = file_get_contents($this->dataSourcePath);
+            $this->dataSource = json_decode($jsonData, true);
+        }else{
+            throw new ErrorException("ERROR: Data source path not found.");
+        }
     }
     
     /**
@@ -367,10 +375,15 @@ class Indexer extends Tree
     /**
      * Set the input data source
      * @param $path
+     * @throws ErrorException
      */
     public function setGeoDataSource($path)
     {
-        $this->dataSourcePath = $path;
+        if (isset($path) && is_file($path)) {
+            $this->dataSourcePath = $path;
+        }else{
+            throw new ErrorException("ERROR: Geo data source path not found.");
+        }
     }
     
     /**

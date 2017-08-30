@@ -3,14 +3,14 @@
 namespace GeoTimeZone;
 
 use ZipArchive;
+use ErrorException;
 use GuzzleHttp\Client;
-use GeoTimeZone\Quadrant\Indexer as Indexer;
+use GeoTimeZone\Quadrant\Indexer;
 
 
 class UpdaterData
 {
-    const MAIN_DIR = "/../../data";
-    const DOWNLOAD_DIR = "/../../data/downloads/";
+    const DOWNLOAD_DIR = "downloads/";
     const TIMEZONE_FILE_NAME = "timezones";
     const REPO_HOST = "https://api.github.com";
     const REPO_USER = "node-geo-tz";
@@ -18,16 +18,23 @@ class UpdaterData
     const GEO_JSON_DEFAULT_URL = "none";
     const GEO_JSON_DEFAULT_NAME = "geojson";
     
-    protected $mainDir;
-    protected $downloadDir;
+    protected $mainDir = null;
+    protected $downloadDir = null;
+    protected $timezonesSourcePath = null;
     
     /**
      * UpdaterData constructor.
+     * @param $dataDirectory
+     * @throws ErrorException
      */
-    public function __construct()
+    public function __construct($dataDirectory = null)
     {
-        $this->mainDir = __DIR__ . self::MAIN_DIR;
-        $this->downloadDir = __DIR__ . self::DOWNLOAD_DIR;
+        if ($dataDirectory == null) {
+            throw new ErrorException("ERROR: Ivalid data directory.");
+        }else{
+            $this->mainDir = $dataDirectory;
+            $this->downloadDir = $dataDirectory . "/" . self::DOWNLOAD_DIR;
+        }
     }
     
     /**
@@ -99,11 +106,10 @@ class UpdaterData
         $controlFlag = false;
         if ($zip->open($filePath) === TRUE) {
             $zipName = basename($filePath, ".zip");
-            echo $zipName;
             if (!is_dir($this->downloadDir . $zipName)) {
                 mkdir($this->downloadDir . $zipName);
             }
-            echo $this->downloadDir . $zipName;
+            echo $this->downloadDir . $zipName . "\n";
             $zip->extractTo($this->downloadDir . $zipName);
             $zip->close();
             $controlFlag = true;
@@ -127,8 +133,9 @@ class UpdaterData
                 break;
             }
         }
-        echo dirname($jsonPath) . "/" . self::TIMEZONE_FILE_NAME . ".json";
-        return rename($jsonPath, dirname($jsonPath) . "/" . self::TIMEZONE_FILE_NAME . ".json");
+        $this->timezonesSourcePath = dirname($jsonPath) . "/" . self::TIMEZONE_FILE_NAME . ".json";
+        echo $this->timezonesSourcePath . "\n";
+        return rename($jsonPath, $this->timezonesSourcePath);
     }
     
     /**
@@ -233,18 +240,18 @@ class UpdaterData
     public function updateData()
     {
         echo "Downloading data...\n";
-        //$this->downloadLastVersion();
+        $this->downloadLastVersion();
         echo "Unzip data...\n";
-        //$this->unzipData($this->downloadDir . self::TIMEZONE_FILE_NAME . ".zip");
+        $this->unzipData($this->downloadDir . self::TIMEZONE_FILE_NAME . ".zip");
         echo "Rename timezones json...\n";
-        //$this->renameTimezoneJson();
+        $this->renameTimezoneJson();
         echo "Remove previous data...\n";
-        //$this->removeDataTree();
+        $this->removeDataTree();
         echo "Creating quadrant tree data...\n";
-        $geoIndexer = new Indexer();
+        $geoIndexer = new Indexer($this->mainDir, $this->timezonesSourcePath);
         $geoIndexer->createQuadrantTreeData();
         echo "Remove downloaded data...\n";
-        //$this->removeDownloadedData();
+        $this->removeDownloadedData();
         echo "Zipping quadrant tree data...";
         $this->zipDir($this->mainDir, $this->mainDir . ".zip");
     }
