@@ -3,15 +3,18 @@
 namespace Tests\GeoTimeZone;
 
 use GeoTimeZone\Calculator;
+use PHPUnit\Runner\Exception;
 use Tests\AbstractUnitTestCase;
 
 class CalculatorTest extends AbstractUnitTestCase
 {
+    const DATA_DIRECTORY = "/../../data/";
+    
     protected $calculator;
     
     protected function setUp()
     {
-        $this->calculator = new Calculator();
+        $this->calculator = new Calculator(__DIR__ . self::DATA_DIRECTORY);
     }
     
     public function getDataLocalDate()

@@ -8,7 +8,6 @@ use GeoTimeZone\Geometry\Utils;
 class Tree extends Element
 {
     const DATA_TREE_FILENAME = "index.json";
-    const DATA_DIRECTORY = "/../../../data/";
     const GEO_FEATURE_FILENAME = "geo.json";
     protected $dataTree = null;
     protected $dataDirectory;
@@ -16,11 +15,12 @@ class Tree extends Element
     
     /**
      * Tree constructor.
+     * @param $dataDirectory
      */
-    public function __construct()
+    public function __construct($dataDirectory)
     {
         Element::__construct();
-        $this->dataDirectory = __DIR__ . self::DATA_DIRECTORY;
+        $this->dataDirectory = $dataDirectory;
         $this->utils = new Utils();
     }
     

@@ -13,11 +13,16 @@ class Calculator
     
     /**
      * TimeZone constructor.
+     * @param $dataDirectory
      */
-    public function __construct()
+    public function __construct($dataDirectory = null)
     {
-        $this->quadrantTree = new Tree();
-        $this->quadrantTree->initializeDataTree();
+        if (isset($dataDirectory) && is_dir($dataDirectory)) {
+            $this->quadrantTree = new Tree($dataDirectory);
+            $this->quadrantTree->initializeDataTree();
+        }else{
+            new ErrorException('Invalid data tree directory: ' . $dataDirectory);
+        }
     }
     
     /**
