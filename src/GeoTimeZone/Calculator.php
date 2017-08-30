@@ -33,7 +33,7 @@ class Calculator
             throw new ErrorException('Invalid latitude: ' . $latitude);
         }
         if (abs($latitude) == Tree::MAX_ABS_LATITUDE) {
-            $newLatitude = ($latitude / Tree::MAX_ABS_LATITUDE) * Tree::ABS_LATITUDE_LIMIT;
+            $newLatitude = ($latitude <=> 0) * Tree::ABS_LATITUDE_LIMIT;
         }
         return $newLatitude;
     }
@@ -51,7 +51,7 @@ class Calculator
             throw new ErrorException('Invalid longitude: ' . $longitude);
         }
         if (abs($longitude) == Tree::MAX_ABS_LONGITUDE) {
-            $newLongitude = ($longitude / Tree::MAX_ABS_LONGITUDE) * Tree::ABS_LONGITUDE_LIMIT;
+            $newLongitude = ($longitude <=> 0) * Tree::ABS_LONGITUDE_LIMIT;
         }
         return $newLongitude;
     }
