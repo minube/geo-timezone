@@ -8,6 +8,13 @@ use geoPHP;
 
 class Utils
 {
+    const POLYGON_GEOJSON_NAME = "Polygon";
+    const POINT_WKT_NAME = "POINT";
+    const FEATURE_COLLECTION_GEOJSON_NAME = "FeatureCollection";
+    const FEATURE_GEOJSON_NAME = "Feature";
+    const WKT_EXTENSION = "wkt";
+    const GEOJSON_EXTENSION = "json";
+    
     /**
      * Convert array of coordinates to polygon structured json array
      * @param $polygonPoints
@@ -16,7 +23,7 @@ class Utils
     public function createPolygonJsonFromPoints($polygonPoints)
     {
         return array(
-            'type' => "Polygon",
+            'type' => self::POLYGON_GEOJSON_NAME,
             'coordinates' => $this->structurePolygonCoordinates($polygonPoints)
         );
     }
@@ -59,7 +66,7 @@ class Utils
     {
         $polygon = null;
         try {
-            $polygon = geoPHP::load($polygonJson, 'json');
+            $polygon = geoPHP::load($polygonJson, self::GEOJSON_EXTENSION);
         } catch (Exception $exception) {
             echo $exception->getMessage();
         }
@@ -117,7 +124,7 @@ class Utils
     protected function structureOneFeature($feature)
     {
         $structuredFeature = array(
-            "type" => "Feature",
+            "type" => self::FEATURE_GEOJSON_NAME,
             "geometry" => array(
                 "type" => $feature['type'],
                 "coordinates" => $feature['coordinates']
@@ -135,7 +142,7 @@ class Utils
     public function getFeatureCollection($features)
     {
         $featuresCollection = array(
-            "type" => "FeatureCollection",
+            "type" => self::FEATURE_COLLECTION_GEOJSON_NAME,
             "features" => $this->structureFeatures($features)
         );
         return $featuresCollection;
@@ -152,7 +159,7 @@ class Utils
         $polygonA = $this->createPolygonFromJson($geoFeaturesJsonA);
         $polygonB = $this->createPolygonFromJson($geoFeaturesJsonB);
         $intersectionData = $polygonA->intersection($polygonB);
-        return $intersectionData->out('json', true);
+        return $intersectionData->out(self::GEOJSON_EXTENSION, true);
     }
     
     /**
@@ -240,8 +247,8 @@ class Utils
     {
         $point = null;
         try {
-            $formattedPoint = "POINT({$longitude} {$latitude})";
-            $point = geoPHP::load($formattedPoint, 'wkt');
+            $formattedPoint = self::POINT_WKT_NAME . "({$longitude} {$latitude})";
+            $point = geoPHP::load($formattedPoint, self::WKT_EXTENSION);
         } catch (Exception $exception) {
             echo $exception->getMessage();
         }
