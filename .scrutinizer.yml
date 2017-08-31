@@ -5,7 +5,7 @@ before_commands:
   - composer install --dev
   - ./bin/compile-geos.sh
   - php composer.phar install
-  - wget https://s3-eu-west-1.amazonaws.com/geo-timezone/data.zip -P ../
+  - wget https://s3-eu-west-1.amazonaws.com/geo-timezone/data.zip
   - unzip data.zip
 
 tools:
