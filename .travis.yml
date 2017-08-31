@@ -8,4 +8,4 @@ before_script:
   - ./bin/compile-geos.sh
   - php composer.phar install
 
-script: vendor/bin/phpunit -c tests/phpunit.xml tests/GeoTimeZone/
+script: vendor/bin/phpunit -c tests/phpunit.xml tests/GeoTimeZone/CalculatorTest.php

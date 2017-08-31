@@ -7,7 +7,7 @@ before_commands:
 tools:
 
   php_code_coverage:
-    test_command: vendor/bin/phpunit -c tests/phpunit.xml tests/GeoTimeZone/
+    test_command: vendor/bin/phpunit -c tests/phpunit.xml tests/GeoTimeZone/CalculatorTest.php
 
   php_code_sniffer:
     enabled: true
@@ -38,7 +38,7 @@ build:
         override:
             -
                 command: 'vendor/bin/phpunit -c tests/phpunit.xml --coverage-clover=coverageFile
-                tests/GeoTimeZone/'
+                tests/GeoTimeZone/CalculatorTest.php'
                 coverage:
                     file: 'coverageFile'
                     format: 'php-clover'
