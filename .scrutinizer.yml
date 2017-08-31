@@ -1,15 +1,12 @@
 
 inherit: true
 
-before_commands:
-  - composer install --dev
-  - ./bin/compile-geos.sh
-  - php composer.phar install
-  - wget https://s3-eu-west-1.amazonaws.com/geo-timezone/data.zip -P ./build/
-  - unzip data.zip
-
+checks:
+    php:
+        code_rating: true
+        duplication: true
+        
 tools:
-
   php_code_coverage:
     test_command: vendor/bin/phpunit -c tests/phpunit.xml tests/GeoTimeZone/CalculatorTest.php
 
