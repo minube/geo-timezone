@@ -40,8 +40,7 @@ build:
     tests:
         override:
             -
-                command: 'vendor/bin/phpunit -c tests/phpunit.xml --coverage-clover=coverageFile
-                tests/GeoTimeZone/CalculatorTest.php'
+                command: 'vendor/bin/phpunit -c tests/phpunit.xml --coverage-clover=coverageFile tests/GeoTimeZone/CalculatorTest.php'
                 coverage:
                     file: 'coverageFile'
                     format: 'php-clover'
