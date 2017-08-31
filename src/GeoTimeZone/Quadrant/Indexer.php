@@ -84,9 +84,9 @@ class Indexer extends Tree
         $foundExactMatch = false;
         for ($inspectIdx = count($timezonesToInspect) - 1; $inspectIdx >= 0; $inspectIdx--) {
             $zoneIdx = $timezonesToInspect[$inspectIdx];
-            $zoneJsonArray = $this->dataSource['features'][$zoneIdx]['geometry'];
-            if ($this->utils->intersectsPolygons($zoneJsonArray, $quadrantBounds)) {
-                if ($this->utils->withinPolygon($quadrantBounds, $zoneJsonArray)) {
+            $zoneJson = $this->dataSource['features'][$zoneIdx]['geometry'];
+            if ($this->utils->intersectsPolygons($zoneJson, $quadrantBounds)) {
+                if ($this->utils->withinPolygon($quadrantBounds, $zoneJson)) {
                     $intersectedZones = $zoneIdx;
                     $foundExactMatch = true;
                     break;
