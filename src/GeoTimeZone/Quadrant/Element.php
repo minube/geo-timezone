@@ -1,6 +1,8 @@
 <?php
 
-class Quadrant
+namespace GeoTimeZone\Quadrant;
+
+class Element
 {
     const MAX_ABS_LATITUDE = 90.0;
     const MAX_ABS_LONGITUDE = 180.0;
@@ -10,7 +12,7 @@ class Quadrant
     const LEVEL_B = 'b';
     const LEVEL_C = 'c';
     const LEVEL_D = 'd';
-
+    
     protected $top;
     protected $bottom;
     protected $left;
@@ -18,11 +20,11 @@ class Quadrant
     protected $midLat;
     protected $midLon;
     protected $level;
-
+    
     /**
-     * Quadrant constructor.
+     * Element constructor.
      */
-    function __construct()
+    public function __construct()
     {
         $this->top = self::MAX_ABS_LATITUDE;
         $this->bottom = (-1) * self::MAX_ABS_LATITUDE;
@@ -32,7 +34,7 @@ class Quadrant
         $this->midLon = 0.0;
         $this->level = self::LEVEL_A;
     }
-
+    
     /**
      * Move the current quadrant to a particular location (latitude, longitude)
      * @param $latitude
@@ -59,7 +61,7 @@ class Quadrant
             $this->left = $this->midLon;
         }
     }
-
+    
     /**
      * Update the mid coordinates attributes of the quadrant
      */
@@ -68,7 +70,7 @@ class Quadrant
         $this->midLat = ($this->top + $this->bottom) / 2.0;
         $this->midLon = ($this->left + $this->right) / 2.0;
     }
-
+    
     /**
      * Get the quadrant level (a, b, c or d)
      * @return string

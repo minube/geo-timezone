@@ -1,23 +1,29 @@
 <?php
 
-include "QuadrantTree.php";
+namespace GeoTimeZone\Quadrant;
 
+use ErrorException;
 
-class QuadrantIndexer extends QuadrantTree
+class Indexer extends Tree
 {
-    const DEFAULT_DATA_SOURCE_PATH = "./data/downloads/timezones/dist/timezones.json";
     const TARGET_INDEX_PERCENT = 0.91;
     const DEFAULT_ZONE_RESULT = -1;
     const LEVEL_DELIMITER_SYMBOL = ".";
     const TOTAL_LEVELS = 4;
-
-    protected $dataSourcePath;
+    
+    protected $dataSourcePath = null;
     protected $dataSource;
     protected $timezones = array();
     protected $lookup = array();
     protected $currentQuadrants = array();
-
-
+    
+    
+    public function __construct($dataDirectory = null, $dataSourcePath = null)
+    {
+        parent::__construct($dataDirectory);
+        $this->setGeoDataSource($dataSourcePath);
+    }
+    
     /**
      * Initialize the current quadrants attribute for the first indexing iteration
      */
@@ -25,34 +31,37 @@ class QuadrantIndexer extends QuadrantTree
     {
         $this->currentQuadrants = array(
             array(
-                "id" => QuadrantTree::LEVEL_A,
-                "bounds" => array(0, 0, QuadrantTree::ABS_LONGITUDE_LIMIT, QuadrantTree::ABS_LATITUDE_LIMIT)
+                "id" => Tree::LEVEL_A,
+                "bounds" => array(0, 0, Tree::ABS_LONGITUDE_LIMIT, Tree::ABS_LATITUDE_LIMIT)
             ),
             array(
-                "id" => QuadrantTree::LEVEL_B,
-                "bounds" => array(-QuadrantTree::ABS_LONGITUDE_LIMIT, 0, 0, QuadrantTree::ABS_LATITUDE_LIMIT)
+                "id" => Tree::LEVEL_B,
+                "bounds" => array(-Tree::ABS_LONGITUDE_LIMIT, 0, 0, Tree::ABS_LATITUDE_LIMIT)
             ),
             array(
-                "id" => QuadrantTree::LEVEL_C,
-                "bounds" => array(-QuadrantTree::ABS_LONGITUDE_LIMIT, -QuadrantTree::ABS_LATITUDE_LIMIT, 0, 0)
+                "id" => Tree::LEVEL_C,
+                "bounds" => array(-Tree::ABS_LONGITUDE_LIMIT, -Tree::ABS_LATITUDE_LIMIT, 0, 0)
             ),
             array(
-                "id" => QuadrantTree::LEVEL_D,
-                "bounds" => array(0, -QuadrantTree::ABS_LATITUDE_LIMIT, QuadrantTree::ABS_LONGITUDE_LIMIT, 0)
+                "id" => Tree::LEVEL_D,
+                "bounds" => array(0, -Tree::ABS_LATITUDE_LIMIT, Tree::ABS_LONGITUDE_LIMIT, 0)
             )
         );
     }
-
+    
     /**
      * Read the new timezones json to be indexed
      */
     protected function readDataSource()
     {
-        $this->dataSourcePath = is_null($this->dataSourcePath) ? self::DEFAULT_DATA_SOURCE_PATH : $this->dataSourcePath;
-        $jsonData = file_get_contents($this->dataSourcePath);
-        $this->dataSource = json_decode($jsonData, true);
+        if (isset($this->dataSourcePath) && is_file($this->dataSourcePath)) {
+            $jsonData = file_get_contents($this->dataSourcePath);
+            $this->dataSource = json_decode($jsonData, true);
+        }else{
+            throw new ErrorException("ERROR: Data source path not found.");
+        }
     }
-
+    
     /**
      * Save timezones values from the reference file (timezones json) to timezones array attribute
      */
@@ -62,22 +71,22 @@ class QuadrantIndexer extends QuadrantTree
             $this->timezones[] = $feature['properties']['tzid'];
         }
     }
-
+    
     /**
      * Find the timezones that intersect with or are within the quadrant polygon
      * @param $timezonesToInspect
-     * @param $quadrantPolygon
+     * @param $quadrantBounds
      * @return array
      */
-    protected function whichTimeZonesIntersect($timezonesToInspect, $quadrantPolygon)
+    protected function whichTimeZonesIntersect($timezonesToInspect, $quadrantBounds)
     {
         $intersectedZones = [];
         $foundExactMatch = false;
         for ($inspectIdx = count($timezonesToInspect) - 1; $inspectIdx >= 0; $inspectIdx--) {
             $zoneIdx = $timezonesToInspect[$inspectIdx];
-            $zonePolygon = createPolygonFromJson($this->dataSource['features'][$zoneIdx]['geometry']);
-            if ($zonePolygon->intersects($quadrantPolygon)) {
-                if ($quadrantPolygon->within($zonePolygon)) {
+            $zoneJson = $this->dataSource['features'][$zoneIdx]['geometry'];
+            if ($this->utils->intersectsPolygons($zoneJson, $quadrantBounds)) {
+                if ($this->utils->withinPolygon($quadrantBounds, $zoneJson)) {
                     $intersectedZones = $zoneIdx;
                     $foundExactMatch = true;
                     break;
@@ -86,13 +95,12 @@ class QuadrantIndexer extends QuadrantTree
                 }
             }
         }
-
         return array(
             'foundExactMatch' => $foundExactMatch,
             'intersectedZones' => $intersectedZones
         );
     }
-
+    
     /**
      * Create new level of quadrants from the previous bounds, the intersected found timezones and the previous zone ID
      * @param $zoneId
@@ -112,7 +120,7 @@ class QuadrantIndexer extends QuadrantTree
                 $quadrantBounds[3]
             ]
         );
-
+        
         $topLeft = array(
             'id' => $zoneId . '.b',
             'timezones' => $intersectedZones,
@@ -123,7 +131,7 @@ class QuadrantIndexer extends QuadrantTree
                 $quadrantBounds[3]
             ]
         );
-
+        
         $bottomLeft = array(
             'id' => $zoneId . '.c',
             'timezones' => $intersectedZones,
@@ -134,7 +142,7 @@ class QuadrantIndexer extends QuadrantTree
                 (float)($quadrantBounds[1] + $quadrantBounds[3]) / 2.0
             ]
         );
-
+        
         $bottomRight = array(
             'id' => $zoneId . '.d',
             'timezones' => $intersectedZones,
@@ -145,10 +153,10 @@ class QuadrantIndexer extends QuadrantTree
                 (float)($quadrantBounds[1] + $quadrantBounds[3]) / 2.0
             ]
         );
-
+        
         return array($topRight, $topLeft, $bottomLeft, $bottomRight);
     }
-
+    
     /**
      * Select timezones to find the intersections
      * @param $previousTimezone
@@ -166,7 +174,7 @@ class QuadrantIndexer extends QuadrantTree
         }
         return $timezonesToInspect;
     }
-
+    
     /**
      * Update the lookup table
      * @param $zoneResult
@@ -175,14 +183,13 @@ class QuadrantIndexer extends QuadrantTree
     protected function updateLookup($zoneResult, $curQuadrantId)
     {
         $levelPath = explode(self::LEVEL_DELIMITER_SYMBOL, $curQuadrantId);
-
         if ($zoneResult !== self::DEFAULT_ZONE_RESULT) {
             $this->addLevelToLookup($zoneResult, $levelPath);
         } else {
             $this->removeLevelFromLookup($levelPath);
         }
     }
-
+    
     /**
      * Get intersection features from current quadrant and each intersected timezone areas
      * @param $intersectionResult
@@ -194,11 +201,11 @@ class QuadrantIndexer extends QuadrantTree
         $features = [];
         for ($zoneIdx = count($intersectionResult['intersectedZones']) - 1; $zoneIdx >= 0; $zoneIdx--) {
             $tzIdx = $intersectionResult['intersectedZones'][$zoneIdx];
-            $quadrantBoundsGeoJson = createPolygonJsonFromPoints(
-                adaptQuadrantBoundsToPolygon($curQuadrant['bounds'])
+            $quadrantBoundsGeoJson = $this->utils->createPolygonJsonFromPoints(
+                $this->utils->adaptQuadrantBoundsToPolygon($curQuadrant['bounds'])
             );
-            $intersectedArea = intersection(
-                $this->dataSource['features'][$tzIdx]['geometry'],
+            $intersectedArea = $this->utils->intersection(
+                json_encode($this->dataSource['features'][$tzIdx]['geometry']),
                 $quadrantBoundsGeoJson);
             if ($intersectedArea) {
                 $intersectedArea['properties']['tzid'] = $this->timezones[$tzIdx];
@@ -207,7 +214,7 @@ class QuadrantIndexer extends QuadrantTree
         }
         return $features;
     }
-
+    
     /**
      * Find the associated zones to the current quadrants and the next quadrants to be evaluated
      * @param $intersectionResult
@@ -224,8 +231,8 @@ class QuadrantIndexer extends QuadrantTree
         } elseif (count($intersectionResult['intersectedZones']) > 0) {
             if ($lastLevelFlag) {
                 $features = $this->getIntersectionFeatures($intersectionResult, $curQuadrant);
-                $featuresCollection = getFeatureCollection($features);
-                $featuresPath = QuadrantTree::DATA_DIRECTORY . str_replace('.', "/", $curQuadrant['id']) . "/";
+                $featuresCollection = $this->utils->getFeatureCollection($features);
+                $featuresPath = $this->dataDirectory . str_replace('.', "/", $curQuadrant['id']) . "/";
                 $this->writeGeoFeaturesToJson($featuresCollection, $featuresPath);
                 $zoneResult = 'f';
             } else {
@@ -247,7 +254,7 @@ class QuadrantIndexer extends QuadrantTree
             'nextQuadrants' => $nextQuadrants
         );
     }
-
+    
     /**
      * Check if the current indexing iteration should be carry on or not
      * @param $curLevel
@@ -262,7 +269,7 @@ class QuadrantIndexer extends QuadrantTree
         echo " Indexing percentage: " . $curPctIndexed . "\n";
         return $curPctIndexed < self::TARGET_INDEX_PERCENT;
     }
-
+    
     /**
      * Index current quadrants and get the new ones
      * @param $lastLevelFlag
@@ -279,7 +286,7 @@ class QuadrantIndexer extends QuadrantTree
         }
         return $nextQuadrants;
     }
-
+    
     /**
      * Main function that run all index processing
      */
@@ -289,7 +296,7 @@ class QuadrantIndexer extends QuadrantTree
         $curLevel = 1;
         $numQuadrants = 16;
         $lastLevel = 0;
-
+        
         while ($this->validIndexingPercentage($curLevel, $numQuadrants)) {
             $curLevel += 1;
             $this->currentQuadrants = $this->indexQuadrants($lastLevel);
@@ -301,16 +308,16 @@ class QuadrantIndexer extends QuadrantTree
         echo "Writing quadrant tree json...\n";
         $this->writeQuadrantTreeJson();
     }
-
+    
     /**
      * Create the directory tree
      * @param $path
      */
     protected function createDirectoryTree($path)
     {
-        $directories = explode(QuadrantTree::DATA_DIRECTORY, $path)[1];
+        $directories = explode($this->dataDirectory, $path)[1];
         $directories = explode("/", $directories);
-        $currentDir = QuadrantTree::DATA_DIRECTORY;
+        $currentDir = $this->dataDirectory;
         foreach ($directories as $dir) {
             $currentDir = $currentDir . "/" . $dir;
             if (!is_dir($currentDir)) {
@@ -318,7 +325,7 @@ class QuadrantIndexer extends QuadrantTree
             }
         }
     }
-
+    
     /**
      * Create json file from timezone features
      * @param $features
@@ -330,12 +337,12 @@ class QuadrantIndexer extends QuadrantTree
         $writtenBytes = false;
         $this->createDirectoryTree($path);
         if ($path && is_writable($path)) {
-            $full = $path . DIRECTORY_SEPARATOR . QuadrantTree::GEO_FEATURE_FILENAME;
+            $full = $path . DIRECTORY_SEPARATOR . Tree::GEO_FEATURE_FILENAME;
             $writtenBytes = file_put_contents($full, json_encode($features));
         }
         return $writtenBytes;
     }
-
+    
     /**
      * Build tree array to be save in a json file later
      * @return array
@@ -348,7 +355,7 @@ class QuadrantIndexer extends QuadrantTree
         );
         return $tree;
     }
-
+    
     /**
      * Write the quadrant tree in a json file
      * @return bool|int
@@ -357,23 +364,28 @@ class QuadrantIndexer extends QuadrantTree
     {
         $writtenBytes = false;
         $tree = $this->buildTree();
-        $path = realpath(QuadrantTree::DATA_DIRECTORY);
+        $path = realpath($this->dataDirectory);
         if ($path && is_writable($path)) {
-            $full = $path . DIRECTORY_SEPARATOR . QuadrantTree::DATA_TREE_FILENAME;
+            $full = $path . DIRECTORY_SEPARATOR . Tree::DATA_TREE_FILENAME;
             $writtenBytes = file_put_contents($full, json_encode($tree));
         }
         return $writtenBytes;
     }
-
+    
     /**
      * Set the input data source
      * @param $path
+     * @throws ErrorException
      */
     public function setGeoDataSource($path)
     {
-        $this->dataSourcePath = $path;
+        if (isset($path) && is_file($path)) {
+            $this->dataSourcePath = $path;
+        }else{
+            throw new ErrorException("ERROR: Geo data source path not found.");
+        }
     }
-
+    
     /**
      * Main public function that starts all processing
      */
@@ -386,7 +398,7 @@ class QuadrantIndexer extends QuadrantTree
         echo "Generating indexes...\n";
         $this->generateIndexes();
     }
-
+    
     /**
      * Find the intersected timezones and the next quadrant to be evaluated
      * @param $lastLevelFlag
@@ -396,16 +408,15 @@ class QuadrantIndexer extends QuadrantTree
     protected function findTimezonesAndNextQuadrants($lastLevelFlag, $curQuadrant)
     {
         $quadrantBounds = $curQuadrant['bounds'];
-        $quadrantPolygon = getQuadrantPolygon($quadrantBounds);
         $timezonesToInspect = $this->selectTimeZonesToInspect($curQuadrant);
-        $intersectionResult = $this->whichTimeZonesIntersect($timezonesToInspect, $quadrantPolygon);
+        $intersectionResult = $this->whichTimeZonesIntersect($timezonesToInspect, $quadrantBounds);
         $zonesAndNextQuadrants = $this->getAssociatedZonesAndNextQuadrants(
             $intersectionResult,
             $curQuadrant,
             $lastLevelFlag);
         return $zonesAndNextQuadrants;
     }
-
+    
     /**
      * Add level to the lookup table where the quadrant tree is being defined
      * @param $zoneResult
@@ -420,7 +431,7 @@ class QuadrantIndexer extends QuadrantTree
         }
         $level = $zoneResult;
     }
-
+    
     /**
      * Remove level from the lookup table where the quadrant tree is being defined
      * @param $levelPath
