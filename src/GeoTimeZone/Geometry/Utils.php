@@ -13,6 +13,7 @@ class Utils
     const FEATURE_GEOJSON_NAME = "Feature";
     const WKT_EXTENSION = "wkt";
     const GEOJSON_EXTENSION = "json";
+    const NOT_FOUND_IN_FEATURES = "notFoundInFeatures";
     
     /**
      * Convert array of coordinates to polygon structured json array
@@ -254,7 +255,7 @@ class Utils
      */
     public function isPointInQuadrantFeatures($features, $latitude, $longitude)
     {
-        $timeZone = "notFound";
+        $timeZone = self::NOT_FOUND_IN_FEATURES;
         $point = $this->createPoint($latitude, $longitude);
         if ($point != null) {
             foreach ($features['features'][0] as $feature) {

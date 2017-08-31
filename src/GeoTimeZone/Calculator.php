@@ -14,6 +14,7 @@ class Calculator
     /**
      * TimeZone constructor.
      * @param $dataDirectory
+     * @throws ErrorException
      */
     public function __construct($dataDirectory = null)
     {
@@ -21,7 +22,7 @@ class Calculator
             $this->quadrantTree = new Tree($dataDirectory);
             $this->quadrantTree->initializeDataTree();
         }else{
-            new ErrorException('Invalid data tree directory: ' . $dataDirectory);
+            throw new ErrorException('Invalid data tree directory: ' . $dataDirectory);
         }
     }
     
@@ -69,9 +70,14 @@ class Calculator
      */
     public function getTimeZoneName($latitude, $longitude)
     {
-        $latitude = $this->adjustLatitude($latitude);
-        $longitude = $this->adjustLongitude($longitude);
-        $timeZone = $this->quadrantTree->lookForTimezone($latitude, $longitude);
+        $timeZone = Tree::NONE_TIMEZONE;
+        try {
+            $latitude = $this->adjustLatitude($latitude);
+            $longitude = $this->adjustLongitude($longitude);
+            $timeZone = $this->quadrantTree->lookForTimezone($latitude, $longitude);
+        }catch (ErrorException $error){
+            echo $error->getMessage() . "\n";
+        }
         return $timeZone;
     }
     
@@ -87,7 +93,7 @@ class Calculator
         $timeZone = $this->getTimeZoneName($latitude, $longitude);
         $date = new DateTime();
         $date->setTimestamp($timestamp);
-        if ($timeZone != null) {
+        if ($timeZone != Tree::NONE_TIMEZONE) {
             $date->setTimezone(new DateTimeZone($timeZone));
         }
         return $date;
@@ -104,7 +110,7 @@ class Calculator
     {
         $timestamp = $localTimestamp;
         $timeZoneName = $this->getTimeZoneName($latitude, $longitude);
-        if ($timeZoneName != "none") {
+        if ($timeZoneName != Tree::NONE_TIMEZONE) {
             $date = new DateTime();
             $date->setTimestamp($localTimestamp);
             if ($timeZoneName != null) {

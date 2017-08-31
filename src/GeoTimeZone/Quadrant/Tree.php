@@ -9,6 +9,7 @@ class Tree extends Element
 {
     const DATA_TREE_FILENAME = "index.json";
     const GEO_FEATURE_FILENAME = "geo.json";
+    const NONE_TIMEZONE = "none";
     protected $dataTree = null;
     protected $dataDirectory;
     protected $utils;
@@ -70,12 +71,12 @@ class Tree extends Element
      * @param $quadrantPath
      * @param $latitude
      * @param $longitude
-     * @return null|string
+     * @return string
      * @throws ErrorException
      */
     protected function evaluateQuadrantData($zoneData, $quadrantPath, $latitude, $longitude)
     {
-        $validTimezone = 'none';
+        $validTimezone = self::NONE_TIMEZONE;
         if (!isset($zoneData)) {
             throw new ErrorException('Unexpected data type');
         } elseif ($zoneData === "f") {
@@ -93,19 +94,20 @@ class Tree extends Element
      */
     protected function isValidTimeZone($timeZone)
     {
-        return $timeZone == null || $timeZone != "none";
+        return $timeZone != self::NONE_TIMEZONE;
     }
     
     /**
      * Main function for looking the timezone associated to a particular location (latitude, longitude)
      * @param $latitude
      * @param $longitude
-     * @return null|string
+     * @return string
+     * @throws ErrorException
      */
     public function lookForTimeZone($latitude, $longitude)
     {
         $geoQuadrant = new Element();
-        $timeZone = "none";
+        $timeZone = self::NONE_TIMEZONE;
         $quadrantPath = '';
         $quadrantTree = $this->dataTree['lookup'];
         
@@ -118,6 +120,10 @@ class Tree extends Element
             $quadrantPath = $quadrantPath . $geoQuadrant->getLevel();
             $timeZone = $this->evaluateQuadrantData($quadrantTree, $quadrantPath, $latitude, $longitude);
             $geoQuadrant->updateMidCoordinates();
+        }
+        
+        if ($timeZone == self::NONE_TIMEZONE || $timeZone == Utils::NOT_FOUND_IN_FEATURES) {
+            throw new ErrorException("ERROR: TimeZone not found");
         }
         
         return $timeZone;
