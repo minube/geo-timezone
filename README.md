@@ -1,5 +1,5 @@
 # Geo-Timezone PHP Library
-[![Build Status](https://travis-ci.org/minube/geo-timezone.png)](https://travis-ci.org/minube/geo-timezone) [![Code Coverage](https://scrutinizer-ci.com/g/minube/geo-timezone/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/minube/geo-timezone/?branch=master) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/minube/geo-timezone/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/minube/geo-timezone/?branch=master) [![Build Status](https://scrutinizer-ci.com/g/minube/geo-timezone/badges/build.png?b=master)](https://scrutinizer-ci.com/g/minube/geo-timezone/build-status/master)
+[![Build Status](https://travis-ci.org/minube/geo-timezone.png)](https://travis-ci.org/minube/geo-timezone)
 
 Based on the [node-geo-tz package](https://github.com/evansiroky/node-geo-tz), this PHP library calculates the timezone associated to a particular location based on coordinates (latitude, longitude) and timestamp
 reference. Therefore, this library provides the local date of a particular location in any moment too.
