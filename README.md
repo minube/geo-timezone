@@ -18,8 +18,9 @@ will be installed.
 ## Usage
 There are two main classes:
 
-* UpdaterData: script that downloads the last version of the timezone boundaries data and creates the tree of directories (data.zip). It takes a few hours, so you can use "data.zip" from node-geo-tz to test for the first time. Otherwise, you can run the UpdaterData script in order to get the last version and create the directories tree.
-```
+* UpdaterData: script that downloads the last version of the timezone boundaries data and creates the tree of directories (data.zip). It takes a few hours, so you can use "data.zip" from node-geo-tz to test for the first time. Otherwise, you can run the UpdaterData script in order to get the last version and create the directories tree. Destination folder must have write permisions
+
+```php
     use GeoTimeZone\UpdaterData;
 
     $updater = new UpdaterData("/path/to/data/");
@@ -27,7 +28,7 @@ There are two main classes:
 ```
 
 * Calculator: provides the timezone name or the local date associated to a particular latitude, longitude and timestamp.
-```
+```php
     use GeoTimeZone\Calculator;
 
     $latitude = 39.452800;
@@ -38,14 +39,15 @@ There are two main classes:
 
     // Local date
     $localDate = $calculator->getLocalDate($latitude, $longitude, $timestamp);
-    DateTime Object
+    /* DateTime Object
     (
         [date] => 2016-07-24 21:16:00.000000
         [timezone_type] => 3
         [timezone] => Europe/Madrid
     )
+    */
 
     // TimeZone name
     $timeZoneName = $calculator->getTimeZoneName($latitude, $longitude);
-    Europe/Madrid
+    //Europe/Madrid
 ```
