@@ -1,0 +1,44 @@
+
+inherit: true
+
+before_commands:
+  - composer install --dev
+
+tools:
+
+  php_code_coverage:
+    test_command: vendor/bin/phpunit -c tests/phpunit.xml tests/GeoTimeZone/
+
+  php_code_sniffer:
+    enabled: true
+    config:
+      standard: PSR1 # Built-in standards: PEAR, PHPCS, PSR1, PSR2, Squiz, Zend
+
+  php_cpd:
+    min_lines: 5
+    min_tokens: 70
+    enabled: true
+
+  php_cs_fixer:
+    enabled: true
+    config:
+      level: psr1 # Allowed Values: "psr0", "psr1", "psr2", "all"
+
+  php_loc:
+    command: phploc
+    enabled: true
+
+  php_mess_detector:
+    enabled: true
+    config:
+      rulesets:
+        - codesize
+build:
+    tests:
+        override:
+            -
+                command: 'vendor/bin/phpunit -c tests/phpunit.xml --coverage-clover=coverageFile
+                tests/GeoTimeZone/'
+                coverage:
+                    file: 'coverageFile'
+                    format: 'php-clover'

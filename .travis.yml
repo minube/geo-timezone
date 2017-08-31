@@ -1,0 +1,11 @@
+language: php
+
+php:
+  - 7.0
+
+before_script:
+  - curl -s http://getcomposer.org/installer | php
+  - ./bin/compile-geos.sh
+  - php composer.phar install
+
+script: vendor/bin/phpunit -c tests/phpunit.xml test/GeoTimeZone/
