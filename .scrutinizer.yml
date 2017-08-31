@@ -41,6 +41,12 @@ build:
     tests:
         override:
             -
+                ./bin/compile-geos.sh
+            -
+                wget https://s3-eu-west-1.amazonaws.com/geo-timezone/data.zip -P ./build/
+            -
+                unzip data.zip
+            -
                 command: 'vendor/bin/phpunit -c tests/phpunit.xml --coverage-clover=coverageFile tests/GeoTimeZone/CalculatorTest.php'
                 coverage:
                     file: 'coverageFile'
