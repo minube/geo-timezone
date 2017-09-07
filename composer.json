@@ -20,7 +20,7 @@
     "ext-mbstring": ">=7.0",
     "ext-zip": "*",
     "ext-xml":">=7.0",
-    "phpunit/phpunit": "6.3.0",
+    "phpunit/phpunit": "5.7.4",
     "guzzlehttp/guzzle": "6.3.0"
   },
   "autoload": {
