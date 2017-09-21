@@ -67,6 +67,7 @@ class Calculator
      * @param $latitude
      * @param $longitude
      * @return string
+     * @throws ErrorException
      */
     public function getTimeZoneName($latitude, $longitude)
     {
@@ -76,7 +77,7 @@ class Calculator
             $longitude = $this->adjustLongitude($longitude);
             $timeZone = $this->quadrantTree->lookForTimezone($latitude, $longitude);
         }catch (ErrorException $error){
-            echo $error->getMessage() . "\n";
+            throw $error;
         }
         return $timeZone;
     }
@@ -87,14 +88,19 @@ class Calculator
      * @param $longitude
      * @param $timestamp
      * @return DateTime
+     * @throws ErrorException
      */
     public function getLocalDate($latitude, $longitude, $timestamp)
     {
-        $timeZone = $this->getTimeZoneName($latitude, $longitude);
         $date = new DateTime();
-        $date->setTimestamp($timestamp);
-        if ($timeZone != Tree::NONE_TIMEZONE) {
-            $date->setTimezone(new DateTimeZone($timeZone));
+        try {
+            $timeZone = $this->getTimeZoneName($latitude, $longitude);
+            $date->setTimestamp($timestamp);
+            if ($timeZone != Tree::NONE_TIMEZONE) {
+                $date->setTimezone(new DateTimeZone($timeZone));
+            }
+        }catch (ErrorException $error){
+            throw $error;
         }
         return $date;
     }
@@ -105,18 +111,23 @@ class Calculator
      * @param $longitude
      * @param $localTimestamp
      * @return mixed
+     * @throws ErrorException
      */
     public function getCorrectTimestamp($latitude, $longitude, $localTimestamp)
     {
         $timestamp = $localTimestamp;
-        $timeZoneName = $this->getTimeZoneName($latitude, $longitude);
-        if ($timeZoneName != Tree::NONE_TIMEZONE) {
-            $date = new DateTime();
-            $date->setTimestamp($localTimestamp);
-            if ($timeZoneName != null) {
-                $date->setTimezone(new DateTimeZone($timeZoneName));
+        try {
+            $timeZoneName = $this->getTimeZoneName($latitude, $longitude);
+            if ($timeZoneName != Tree::NONE_TIMEZONE) {
+                $date = new DateTime();
+                $date->setTimestamp($localTimestamp);
+                if ($timeZoneName != null) {
+                    $date->setTimezone(new DateTimeZone($timeZoneName));
+                }
+                $timestamp = $date->getOffset() != false ? $localTimestamp - $date->getOffset() : $localTimestamp;
             }
-            $timestamp = $date->getOffset() != false ? $localTimestamp - $date->getOffset() : $localTimestamp;
+        }catch(ErrorException $error){
+            throw $error;
         }
         return $timestamp;
     }
