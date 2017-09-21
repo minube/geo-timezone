@@ -33,6 +33,13 @@ class CalculatorTest extends AbstractUnitTestCase
                 'timestamp' => 1469387760,
                 'expectedTimeZone' => 'Europe/Madrid',
                 '$expectedOffset' => 7200
+            ),
+            'Testing Caracas' => array(
+                'latitude' => 7.811258,
+                'longitude' => -72.199897,
+                'timestamp' => 1412482901,
+                'expectedTimeZone' => 'America/Caracas',
+                '$expectedOffset' => -16200
             )
         );
     }
@@ -71,16 +78,30 @@ class CalculatorTest extends AbstractUnitTestCase
         );
     }
     
+    public function getNoTimezone()
+    {
+        return array(
+            'Testing None Timezone' => array(
+                'latitude' => -1,
+                'longitude' => -1,
+                'timestamp' => 0,
+                'expectedException' => "ERROR: TimeZone not found",
+            )
+        );
+    }
+    
     public function getDataWrongLatitude()
     {
         return array(
             'Testing Wrong Latitude' => array(
                 'latitude' => 10000000,
-                'longitude' => -8.612150
+                'longitude' => -8.612150,
+                'expectedException' => "Invalid latitude: 10000000",
             ),
             'Testing Null Latitude' => array(
                 'latitude' => null,
-                'longitude' => -8.612150
+                'longitude' => -8.612150,
+                'expectedException' => "Invalid latitude: ",
             )
         );
     }
@@ -91,11 +112,13 @@ class CalculatorTest extends AbstractUnitTestCase
             'Testing Wrong Longitude' => array(
                 'latitude' => 41.142700,
                 'longitude' => 10000000,
+                'expectedException' => "Invalid longitude: 10000000",
             
             ),
             'Testing Null Longitude' => array(
                 'latitude' => 41.142700,
                 'longitude' => null,
+                'expectedException' => "Invalid longitude: ",
             )
         );
     }
@@ -106,12 +129,14 @@ class CalculatorTest extends AbstractUnitTestCase
             'Testing Positive Max Latitude' => array(
                 'latitude' => 90.0,
                 'longitude' => -8.612150,
-                'adjustedLatitude' => 89.9999
+                'adjustedLatitude' => 89.9999,
+                'expectedException' => "ERROR: TimeZone not found",
             ),
             'Testing Negative Max Latitude' => array(
                 'latitude' => -90.0,
                 'longitude' => -8.612150,
-                'adjustedLatitude' => -89.9999
+                'adjustedLatitude' => -89.9999,
+                'expectedException' => "ERROR: TimeZone not found",
             )
         );
     }
@@ -122,12 +147,14 @@ class CalculatorTest extends AbstractUnitTestCase
             'Testing Positive Max Longitude' => array(
                 'latitude' => -8.612150,
                 'longitude' => 180.0,
-                'adjustedLongitude' => 179.9999
+                'adjustedLongitude' => 179.9999,
+                'expectedException' => "ERROR: TimeZone not found",
             ),
             'Testing Negative Max Longitude' => array(
                 'latitude' => -8.612150,
                 'longitude' => -180.0,
-                'adjustedLongitude' => -179.9999
+                'adjustedLongitude' => -179.9999,
+                'expectedException' => "ERROR: TimeZone not found",
             )
         );
     }
@@ -136,15 +163,16 @@ class CalculatorTest extends AbstractUnitTestCase
      * @dataProvider getDataWrongLatitude
      * @param $latitude
      * @param $longitude
+     * @param $expectedException
      */
-    public function testGetTimeZoneNameWithWrongLatitude($latitude, $longitude)
+    public function testGetTimeZoneNameWithWrongLatitude($latitude, $longitude, $expectedException)
     {
         try {
-            $timeZone = $this->calculator->getTimeZoneName($latitude, $longitude);
-            $this->assertEquals($timeZone, "none");
-        } catch (Exception $error) {
             $this->expectException(\ErrorException::class);
-            $this->expectExceptionMessage("Invalid latitude: {$latitude}");
+            $this->expectExceptionMessage($expectedException);
+            $timeZone = $this->calculator->getTimeZoneName($latitude, $longitude);
+        } catch (Exception $error) {
+            echo $error->getMessage();
         }
     }
     
@@ -152,15 +180,16 @@ class CalculatorTest extends AbstractUnitTestCase
      * @dataProvider getDataWrongLongitude
      * @param $latitude
      * @param $longitude
+     * @param $expectedException
      */
-    public function testGetTimeZoneNameWithWrongLongitude($latitude, $longitude)
+    public function testGetTimeZoneNameWithWrongLongitude($latitude, $longitude, $expectedException)
     {
         try {
-            $timeZone = $this->calculator->getTimeZoneName($latitude, $longitude);
-            $this->assertEquals($timeZone, "none");
-        } catch (Exception $error) {
             $this->expectException(\ErrorException::class);
-            $this->expectExceptionMessage("Invalid longitude: {$longitude}");
+            $this->expectExceptionMessage($expectedException);
+            $timeZone = $this->calculator->getTimeZoneName($latitude, $longitude);
+        } catch (Exception $error) {
+            echo $error->getMessage();
         }
     }
     
@@ -168,22 +197,36 @@ class CalculatorTest extends AbstractUnitTestCase
      * @dataProvider getDataMaxLatitude
      * @param $latitude
      * @param $longitude
+     * @param $adjustedLatitude
+     * @param $expectedException
      */
-    public function testGetTimeZoneNameWithMaxLatitude($latitude, $longitude)
+    public function testGetTimeZoneNameWithMaxLatitude($latitude, $longitude, $adjustedLatitude, $expectedException)
     {
-        $timeZone = $this->calculator->getTimeZoneName($latitude, $longitude);
-        $this->assertTrue(is_string($timeZone));
+        try {
+            $this->expectException(\ErrorException::class);
+            $this->expectExceptionMessage($expectedException);
+            $timeZone = $this->calculator->getTimeZoneName($latitude, $longitude);
+        } catch (Exception $error) {
+            echo $error->getMessage();
+        }
     }
     
     /**
      * @dataProvider getDataMaxLongitude
      * @param $latitude
      * @param $longitude
+     * @param $adjustedLongitude
+     * @param $expectedException
      */
-    public function testGetTimeZoneNameWithMaxLongitude($latitude, $longitude)
+    public function testGetTimeZoneNameWithMaxLongitude($latitude, $longitude, $adjustedLongitude, $expectedException)
     {
-        $timeZone = $this->calculator->getTimeZoneName($latitude, $longitude);
-        $this->assertTrue(is_string($timeZone));
+        try {
+            $this->expectException(\ErrorException::class);
+            $this->expectExceptionMessage($expectedException);
+            $timeZone = $this->calculator->getTimeZoneName($latitude, $longitude);
+        } catch (Exception $error) {
+            echo $error->getMessage();
+        }
     }
     
     /**
@@ -191,8 +234,9 @@ class CalculatorTest extends AbstractUnitTestCase
      * @param $latitude
      * @param $longitude
      * @param $adjustedLatitude
+     * @param $expectedException
      */
-    public function testAdjustLatitudeWithMaxLatitude($latitude, $longitude, $adjustedLatitude)
+    public function testAdjustLatitudeWithMaxLatitude($latitude, $longitude, $adjustedLatitude, $expectedException)
     {
         $method = $this->getPrivateMethod(get_class($this->calculator), 'adjustLatitude');
         $latitudeToTest = $method->invokeArgs($this->calculator, array($latitude));
@@ -204,8 +248,10 @@ class CalculatorTest extends AbstractUnitTestCase
      * @param $latitude
      * @param $longitude
      * @param $adjustedLongitude
+     * @param $expectedException
      */
-    public function testAdjustMaxLongitudeWithMaxLongitude($latitude, $longitude, $adjustedLongitude)
+    public function testAdjustMaxLongitudeWithMaxLongitude($latitude, $longitude, $adjustedLongitude,
+                                                           $expectedException)
     {
         $method = $this->getPrivateMethod(get_class($this->calculator), 'adjustLongitude');
         $longitudeToTest = $method->invokeArgs($this->calculator, array($longitude));
@@ -223,7 +269,6 @@ class CalculatorTest extends AbstractUnitTestCase
     public function testGetLocalDate($latitude, $longitude, $timestamp, $expectedTimeZone, $expectedOffset)
     {
         $localDate = $this->calculator->getLocalDate($latitude, $longitude, $timestamp);
-        
         $this->assertInstanceOf('DateTime', $localDate);
         $this->assertEquals(
             $localDate->getTimezone()->getName(),
@@ -233,6 +278,24 @@ class CalculatorTest extends AbstractUnitTestCase
             $localDate->getOffset(),
             $expectedOffset
         );
+    }
+    
+    /**
+     * @dataProvider getNoTimezone
+     * @param $latitude
+     * @param $longitude
+     * @param $timestamp
+     * @param $expectedException
+     */
+    public function testGetLocalDateException($latitude, $longitude, $timestamp, $expectedException)
+    {
+        try {
+            $this->expectException(\ErrorException::class);
+            $this->expectExceptionMessage($expectedException);
+            $localDate = $this->calculator->getLocalDate($latitude, $longitude, $timestamp);
+        } catch (Exception $error) {
+            echo $error->getMessage();
+        }
     }
     
     /**
@@ -249,6 +312,24 @@ class CalculatorTest extends AbstractUnitTestCase
     }
     
     /**
+     * @dataProvider getNoTimezone
+     * @param $latitude
+     * @param $longitude
+     * @param $timestamp
+     * @param $expectedException
+     */
+    public function testGetCorrectTimestampException($latitude, $longitude, $timestamp, $expectedException)
+    {
+        try {
+            $this->expectException(\ErrorException::class);
+            $this->expectExceptionMessage($expectedException);
+            $correctTimestamp = $this->calculator->getCorrectTimestamp($latitude, $longitude, $timestamp);
+        } catch (Exception $error) {
+            echo $error->getMessage();
+        }
+    }
+    
+    /**
      * @dataProvider getDataTimeZoneName
      * @param $latitude
      * @param $longitude
@@ -256,7 +337,29 @@ class CalculatorTest extends AbstractUnitTestCase
      */
     public function testGetTimeZoneName($latitude, $longitude, $expectedTimeZone)
     {
-        $timeZoneName = $this->calculator->getTimeZoneName($latitude, $longitude);
-        $this->assertEquals($timeZoneName, $expectedTimeZone);
+        try {
+            $timeZoneName = $this->calculator->getTimeZoneName($latitude, $longitude);
+            $this->assertEquals($timeZoneName, $expectedTimeZone);
+        } catch (Exception $error) {
+            echo $error->getMessage();
+        }
+    }
+    
+    /**
+     * @dataProvider getNoTimezone
+     * @param $latitude
+     * @param $longitude
+     * @param $timestamp
+     * @param $expectedException
+     */
+    public function testGetTimeZoneNameException($latitude, $longitude, $timestamp, $expectedException)
+    {
+        try {
+            $this->expectException(\ErrorException::class);
+            $this->expectExceptionMessage($expectedException);
+            $timeZoneName = $this->calculator->getTimeZoneName($latitude, $longitude);
+        } catch (Exception $error) {
+            echo $error->getMessage();
+        }
     }
 }
