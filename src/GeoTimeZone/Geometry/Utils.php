@@ -258,7 +258,7 @@ class Utils
         $timeZone = self::NOT_FOUND_IN_FEATURES;
         $point = $this->createPoint($latitude, $longitude);
         if ($point != null) {
-            foreach ($features['features'][0] as $feature) {
+            foreach ($features['features'] as $feature) {
                 foreach ($feature['geometry']['coordinates'] as $polygonFeatures) {
                     $polygon = $this->createPolygonFromJson(
                         json_encode($this->createPolygonJsonFromPoints(
