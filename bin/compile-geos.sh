@@ -23,12 +23,12 @@ git clone https://git.osgeo.org/gogs/geos/php-geos.git  &&\
   make  &&\
   make install
 
-cat <<EOF > /etc/php/7.0/mods-available/geos.ini
+cat <<EOF > /etc/php/7.0.22/mods-available/geos.ini
 ; configuration for php geos module
 ; priority=50
 extension=geos.so
 EOF
 
-cd /etc/php/7.0/cli/conf.d &&\
-ln -s /etc/php/7.0/mods-available/geos.ini &&\
+cd /etc/php/7.0.22/cli/conf.d &&\
+ln -s /etc/php/7.0.22/mods-available/geos.ini &&\
 phpenmod geos
