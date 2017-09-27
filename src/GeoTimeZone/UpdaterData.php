@@ -239,8 +239,8 @@ class UpdaterData
      */
     public function updateData()
     {
-//        echo "Downloading data...\n";
-//        $this->downloadLastVersion();
+        echo "Downloading data...\n";
+        $this->downloadLastVersion();
         echo "Unzip data...\n";
         $this->unzipData($this->downloadDir . self::TIMEZONE_FILE_NAME . ".zip");
         echo "Rename timezones json...\n";
