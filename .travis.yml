@@ -8,6 +8,6 @@ before_script:
   - ./bin/compile-geos.sh
   - php composer.phar install
   - wget https://s3-eu-west-1.amazonaws.com/geo-timezone/data_20170926.zip -P ./
-  - unzip data.zip
+  - unzip data_20170926.zip
 
 script: vendor/bin/phpunit -c tests/phpunit.xml tests/GeoTimeZone/CalculatorTest.php
