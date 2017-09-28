@@ -13,8 +13,9 @@ GEOS PHP extension is needed to run library. So, you should download and compile
 As you can see, this script contains the installation of some php extensions that will be necessary in the next
 step of the installation process.
 
-Once you have compiled the GEOS PHP extension, you should run the composer file, so the rest of necessary libraries
-will be installed.
+Once you have compiled the GEOS PHP extension, you should create the file geos.ini in order to enable the module and improve the performance consequently.
+
+Finally, you should run the composer file, so the rest of necessary libraries will be installed.
 
 
 ## Usage
