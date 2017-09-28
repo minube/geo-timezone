@@ -29,7 +29,9 @@ cat <<EOF > /etc/php/7.0/mods-available/geos.ini
 ; priority=50
 extension=geos.so
 EOF
-ls -a /etc
+ls -a /home/travis
+ls -a /home/travis/.phpenv/versions/7.0.22
+
 cd /etc/php/7.0/cli/conf.d &&\
 ln -s /etc/php/7.0/mods-available/geos.ini &&\
 phpenmod geos
