@@ -40,6 +40,27 @@ class CalculatorTest extends AbstractUnitTestCase
                 'timestamp' => 1412482901,
                 'expectedTimeZone' => 'America/Caracas',
                 '$expectedOffset' => -16200
+            ),
+            'Testing Praga' => array(
+                'latitude' => 50.087257,
+                'longitude' => 14.636790,
+                'timestamp' => 1506408879,
+                'expectedTimeZone' => 'Europe/Prague',
+                '$expectedOffset' => 7200
+            ),
+            'Testing Berlin Limit' => array(
+                'latitude' => 48.518129,
+                'longitude' => 13.730860,
+                'timestamp' => 1506408879,
+                'expectedTimeZone' => 'Europe/Vienna',
+                '$expectedOffset' => 7200
+            ),
+            'Testing Roma Limit' => array(
+                'latitude' => 46.840306,
+                'longitude' => 12.301866,
+                'timestamp' => 1506408879,
+                'expectedTimeZone' => 'Europe/Rome',
+                '$expectedOffset' => 7200
             )
         );
     }
@@ -270,6 +291,7 @@ class CalculatorTest extends AbstractUnitTestCase
     {
         $localDate = $this->calculator->getLocalDate($latitude, $longitude, $timestamp);
         $this->assertInstanceOf('DateTime', $localDate);
+        echo $localDate->getTimezone()->getName() . "\n";
         $this->assertEquals(
             $localDate->getTimezone()->getName(),
             $expectedTimeZone

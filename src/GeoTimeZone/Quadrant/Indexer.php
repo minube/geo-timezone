@@ -6,7 +6,7 @@ use ErrorException;
 
 class Indexer extends Tree
 {
-    const TARGET_INDEX_PERCENT = 0.91;
+    const TARGET_INDEX_PERCENT = 0.96;
     const DEFAULT_ZONE_RESULT = -1;
     const LEVEL_DELIMITER_SYMBOL = ".";
     const TOTAL_LEVELS = 4;
@@ -84,9 +84,11 @@ class Indexer extends Tree
         $foundExactMatch = false;
         for ($inspectIdx = count($timezonesToInspect) - 1; $inspectIdx >= 0; $inspectIdx--) {
             $zoneIdx = $timezonesToInspect[$inspectIdx];
+            echo $zoneIdx . "; ";
             $zoneJson = $this->dataSource['features'][$zoneIdx]['geometry'];
             if ($this->utils->intersectsPolygons($zoneJson, $quadrantBounds)) {
                 if ($this->utils->withinPolygon($quadrantBounds, $zoneJson)) {
+                    echo "Found match!\n";
                     $intersectedZones = $zoneIdx;
                     $foundExactMatch = true;
                     break;
@@ -204,9 +206,10 @@ class Indexer extends Tree
             $quadrantBoundsGeoJson = $this->utils->createPolygonJsonFromPoints(
                 $this->utils->adaptQuadrantBoundsToPolygon($curQuadrant['bounds'])
             );
+            
             $intersectedArea = $this->utils->intersection(
                 json_encode($this->dataSource['features'][$tzIdx]['geometry']),
-                $quadrantBoundsGeoJson);
+                json_encode($quadrantBoundsGeoJson));
             if ($intersectedArea) {
                 $intersectedArea['properties']['tzid'] = $this->timezones[$tzIdx];
                 $features[] = $intersectedArea;
@@ -265,7 +268,7 @@ class Indexer extends Tree
     {
         $expectedAtLevel = pow(self::TOTAL_LEVELS, $curLevel + 1);
         $curPctIndexed = ($expectedAtLevel - $numQuadrants) / $expectedAtLevel;
-        echo "Iteration " . $curLevel . "\n Num quadrants: " . $numQuadrants . "\n";
+        echo "\nIteration " . $curLevel . "\n Num quadrants: " . $numQuadrants . "\n";
         echo " Indexing percentage: " . $curPctIndexed . "\n";
         return $curPctIndexed < self::TARGET_INDEX_PERCENT;
     }
@@ -302,10 +305,10 @@ class Indexer extends Tree
             $this->currentQuadrants = $this->indexQuadrants($lastLevel);
             $numQuadrants = count($this->currentQuadrants);
         }
-        echo "Last iteration... \n";
+        echo "\nLast iteration... \n";
         $lastLevel = 1;
         $this->currentQuadrants = $this->indexQuadrants($lastLevel);
-        echo "Writing quadrant tree json...\n";
+        echo "\nWriting quadrant tree json...\n";
         $this->writeQuadrantTreeJson();
     }
     

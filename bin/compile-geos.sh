@@ -11,9 +11,10 @@ curl -s -O http://download.osgeo.org/geos/geos-3.6.1.tar.bz2 &&\
   ./configure --enable-php &&\
   make &&\
   make install &&\
-  cd ..
+  cd .. &&\
 
 ldconfig
+
 
 git clone https://git.osgeo.org/gogs/geos/php-geos.git  &&\
   cd php-geos  &&\
@@ -21,3 +22,15 @@ git clone https://git.osgeo.org/gogs/geos/php-geos.git  &&\
   ./configure  &&\
   make  &&\
   make install
+
+# Enable geos module in your system
+# ls /etc/php &&\
+# cat <<EOF > /etc/php/7.0/mods-available/geos.ini
+# ; configuration for php geos module
+# ; priority=50
+# extension=geos.so
+# EOF
+#
+# cd /etc/php/7.0/cli/conf.d &&\
+# ln -s /etc/php/7.0/mods-available/geos.ini &&\
+# phpenmod geos

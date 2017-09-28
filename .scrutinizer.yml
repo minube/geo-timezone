@@ -38,9 +38,9 @@ build:
     tests:
         override:
             -
-                wget https://s3-eu-west-1.amazonaws.com/geo-timezone/data.zip -P ./build/
+                wget https://s3-eu-west-1.amazonaws.com/geo-timezone/data_20170926.zip -P ./build/
             -
-                unzip ./build/data.zip
+                unzip ./build/data_20170926.zip
             -
                 command: 'vendor/bin/phpunit -c tests/phpunit.xml --coverage-clover=coverageFile tests/GeoTimeZone/CalculatorTest.php'
                 coverage:
