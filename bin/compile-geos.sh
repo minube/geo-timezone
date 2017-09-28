@@ -15,6 +15,7 @@ curl -s -O http://download.osgeo.org/geos/geos-3.6.1.tar.bz2 &&\
 
 ldconfig
 
+
 git clone https://git.osgeo.org/gogs/geos/php-geos.git  &&\
   cd php-geos  &&\
   ./autogen.sh  &&\
