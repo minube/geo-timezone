@@ -23,7 +23,7 @@
           "reference":"6.3.0"
         }
       }
-    },
+    }
   ],
   "require": {
     "phayes/geoPHP": "1.2.*",
