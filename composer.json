@@ -11,18 +11,6 @@
           "vendor/phayes/geophp/geoPHP.inc"
         ]
       }
-    },
-    {
-      "type": "package",
-      "package": {
-        "name": "guzzle/guzzle",
-        "version":"master",
-        "source": {
-          "url": "https://github.com/guzzle/guzzle",
-          "type": "git",
-          "reference":"master"
-        }
-      }
     }
   ],
   "require": {
@@ -33,7 +21,7 @@
     "ext-zip": "*",
     "ext-xml":">=7.0",
     "phpunit/phpunit": "5.7.4",
-    "guzzle/guzzle": "6.3.0"
+    "guzzlehttp/guzzle": "6.3.0"
   },
   "autoload": {
     "psr-4": {
