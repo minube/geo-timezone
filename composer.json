@@ -13,9 +13,17 @@
       }
     },
     {
-      "type": "git",
-      "url": "https://github.com/guzzle/guzzle"
-    }
+      "type": "package",
+      "package": {
+        "name": "guzzle/guzzle",
+        "version":"6.3.0",
+        "source": {
+          "url": "https://github.com/guzzle/guzzle",
+          "type": "git",
+          "reference":"6.3.0"
+        }
+      }
+    },
   ],
   "require": {
     "phayes/geoPHP": "1.2.*",
