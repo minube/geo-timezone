@@ -16,11 +16,11 @@
       "type": "package",
       "package": {
         "name": "guzzle/guzzle",
-        "version":"6.3.0",
+        "version":"master",
         "source": {
           "url": "https://github.com/guzzle/guzzle",
           "type": "git",
-          "reference":"6.3.0"
+          "reference":"master"
         }
       }
     }
