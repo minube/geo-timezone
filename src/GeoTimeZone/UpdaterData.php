@@ -3,7 +3,7 @@
 namespace GeoTimeZone;
 
 use ZipArchive;
-use ErrorException;
+use InvalidArgumentException;
 use GuzzleHttp\Client;
 use GeoTimeZone\Quadrant\Indexer;
 
@@ -22,28 +22,19 @@ class UpdaterData
     protected $timezonesSourcePath = null;
 
     /**
-     * UpdaterData constructor.
-     *
-     * @param $dataDirectory
-     *
-     * @throws ErrorException
+     * @throws InvalidArgumentException
      */
     public function __construct($dataDirectory = null)
     {
         if (null == $dataDirectory) {
-            throw new ErrorException('ERROR: Ivalid data directory.');
-        } else {
-            $this->mainDir = $dataDirectory;
-            $this->downloadDir = $dataDirectory.'/'.self::DOWNLOAD_DIR;
+            throw new InvalidArgumentException('ERROR: Ivalid data directory.');
         }
+        $this->mainDir = $dataDirectory;
+        $this->downloadDir = $dataDirectory.'/'.self::DOWNLOAD_DIR;
     }
 
     /**
      * Get complete json response from repo.
-     *
-     * @param $url
-     *
-     * @return mixed
      */
     protected function getResponse($url)
     {
@@ -55,23 +46,13 @@ class UpdaterData
 
     /**
      * Download zip file.
-     *
-     * @param $url
-     * @param string $destinationPath
      */
     protected function getZipResponse($url, $destinationPath = 'none')
     {
         exec("wget {$url} --output-document={$destinationPath}");
     }
 
-    /**
-     * Get timezones json url.
-     *
-     * @param $data
-     *
-     * @return string
-     */
-    protected function getGeoJsonUrl($data)
+    protected function getGeoJsonUrl($data): string
     {
         $jsonResp = json_decode($data, true);
         $geoJsonUrl = self::GEO_JSON_DEFAULT_URL;
@@ -103,14 +84,7 @@ class UpdaterData
         }
     }
 
-    /**
-     * Unzip data.
-     *
-     * @param $filePath
-     *
-     * @return bool
-     */
-    protected function unzipData($filePath)
+    protected function unzipData($filePath): bool
     {
         $zip = new ZipArchive();
         $controlFlag = false;
@@ -131,10 +105,8 @@ class UpdaterData
 
     /**
      * Rename downloaded timezones json file.
-     *
-     * @return bool
      */
-    protected function renameTimezoneJson()
+    protected function renameTimezoneJson(): bool
     {
         $path = realpath($this->downloadDir.self::TIMEZONE_FILE_NAME.'/');
         $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path));
@@ -153,9 +125,6 @@ class UpdaterData
 
     /**
      * Remove all directories tree in a particular data folder.
-     *
-     * @param $path
-     * @param $validDir
      */
     protected function removeData($path, $validDir = null)
     {
@@ -179,13 +148,8 @@ class UpdaterData
                 rmdir($path);
             }
         }
-
-        return;
     }
 
-    /**
-     * Remove data tree.
-     */
     protected function removeDataTree()
     {
         $validDir = [
@@ -197,9 +161,6 @@ class UpdaterData
         $this->removeData($this->mainDir.'/', $validDir);
     }
 
-    /**
-     * Remove downloaded data.
-     */
     protected function removeDownloadedData()
     {
         $validDir = array('downloads', 'timezones', 'dist');
@@ -208,10 +169,6 @@ class UpdaterData
 
     /**
      * Add folder to zip file.
-     *
-     * @param $mainDir
-     * @param $zip
-     * @param $exclusiveLength
      */
     protected function folderToZip($mainDir, &$zip, $exclusiveLength)
     {
@@ -233,9 +190,6 @@ class UpdaterData
 
     /**
      * Compress directory.
-     *
-     * @param $sourcePath
-     * @param $outZipPath
      */
     protected function zipDir($sourcePath, $outZipPath)
     {
