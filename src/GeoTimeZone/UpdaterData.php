@@ -30,7 +30,7 @@ class UpdaterData
     public function __construct($dataDirectory = null)
     {
         if ($dataDirectory == null) {
-            throw new ErrorException("ERROR: Ivalid data directory.");
+            throw new ErrorException("ERROR: Invalid data directory.");
         }else{
             $this->mainDir = $dataDirectory;
             $this->downloadDir = $dataDirectory . "/" . self::DOWNLOAD_DIR;
