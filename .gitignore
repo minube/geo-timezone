@@ -1,6 +1,7 @@
+/composer.lock
 .lock
 data
 test
-vendor
+/vendor/
 .zip
 .idea

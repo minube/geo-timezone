@@ -2,6 +2,7 @@
   "name": "minube/geo-timezone",
   "homepage": "http://minube.com",
   "description": "PHP library for timezone calculation from a particular location and date.",
+  "license": "MIT",
   "repositories": [
     {
       "type": "git",
@@ -14,12 +15,14 @@
     }
   ],
   "require": {
-    "phayes/geoPHP": "1.2.*",
     "php": ">=7.0",
     "ext-dom": ">=7.0",
     "ext-mbstring": ">=7.0",
     "ext-zip": "*",
     "ext-xml":">=7.0",
+    "phayes/geoPHP": "1.2.*"
+  },
+  "require-dev": {
     "phpunit/phpunit": "5.7.4",
     "guzzlehttp/guzzle": "6.3.0"
   },
