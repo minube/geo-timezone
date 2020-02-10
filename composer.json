@@ -23,8 +23,8 @@
     "phayes/geoPHP": "1.2.*"
   },
   "require-dev": {
-    "phpunit/phpunit": "5.7.4",
-    "guzzlehttp/guzzle": "6.3.0"
+    "phpunit/phpunit": "^7.0"
+    "guzzlehttp/guzzle": "^6.3.0"
   },
   "autoload": {
     "psr-4": {
