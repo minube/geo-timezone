@@ -18,6 +18,10 @@ class Calculator
      */
     public function __construct($dataDirectory = null)
     {
+	if (!extension_loaded("geos")) {
+            throw new ErrorException('Required dependency geos extension not installed');
+	}
+
         if (isset($dataDirectory) && is_dir($dataDirectory)) {
             $this->quadrantTree = new Tree($dataDirectory);
             $this->quadrantTree->initializeDataTree();

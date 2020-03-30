@@ -29,6 +29,10 @@ class UpdaterData
      */
     public function __construct($dataDirectory = null)
     {
+	if (!extension_loaded("geos")) {
+            throw new ErrorException('Required dependency geos extension not installed');
+	}
+
         if ($dataDirectory == null) {
             throw new ErrorException("ERROR: Invalid data directory.");
         }else{
