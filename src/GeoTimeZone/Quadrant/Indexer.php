@@ -229,7 +229,7 @@ class Indexer extends Tree
     {
         $zoneResult = self::DEFAULT_ZONE_RESULT;
         $nextQuadrants = [];
-        if (count($intersectionResult['intersectedZones']) === 1 && $intersectionResult['foundExactMatch']) {
+	if (!(is_array ($intersectionResult['intersectedZones'])) && $intersectionResult['foundExactMatch']) {
             $zoneResult = $intersectionResult['intersectedZones'];
         } elseif (count($intersectionResult['intersectedZones']) > 0) {
             if ($lastLevelFlag) {
